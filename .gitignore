@@ -1,0 +1,100 @@
+# Environment and secrets
+.env
+.env.*
+*.local
+*.secret
+secrets/
+credentials/
+
+# Your real publish allowlist (holds your name/email/client scrub tokens) — never commit.
+# Only allowlist.example.yml (placeholders) ships.
+scripts/allowlist.yml
+allowlist.yml
+
+# Local config overrides (never commit real config)
+.claude/settings.json
+.claude/settings.local.json
+# Keep the example — only ignore the real one
+!.claude/settings.example.json
+
+# Skill bank with real scores (only the template ships)
+sdar/skill_bank.json
+!sdar/skill_bank.template.json
+
+# Personal memory and session logs
+.claude/memory/
+memory/
+*.memory.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+.installed.cfg
+*.egg-link
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+venv/
+.venv/
+env/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.parcel-cache
+.next/
+.nuxt/
+dist/
+.cache/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V7
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.orig
+
+# Logs
+*.log
+logs/
+*.pid
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Publish pipeline outputs
+scripts/publish-output/

@@ -1,0 +1,220 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install lint tools
+        run: pip install yamllint
+
+      - name: Validate YAML files
+        run: |
+          find . -name "*.yml" -o -name "*.yaml" | \
+            grep -v node_modules | \
+            grep -v ".github/workflows" | \
+            xargs -r yamllint --no-warnings -d relaxed
+
+      - name: Check Markdown files exist and are non-empty
+        run: |
+          for f in README.md AGENTS.md CLAUDE.md CHANGELOG.md LICENSE; do
+            if [ ! -s "$f" ]; then
+              echo "FAIL: $f is missing or empty"
+              exit 1
+            fi
+          done
+          echo "Core files OK"
+
+  injection-safety:
+    name: Injection Safety Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: sudo apt-get install -y ripgrep
+
+      - name: Scan for hidden unicode (bidi overrides, zero-width chars)
+        run: |
+          echo "Scanning for hidden unicode characters..."
+          if rg -nP '[\x{200B}\x{200C}\x{200D}\x{FEFF}\x{202A}-\x{202E}]' \
+              --glob '!.git/**' .; then
+            echo "FAIL: Hidden unicode characters found. These can be used for prompt injection."
+            exit 1
+          fi
+          echo "PASS: No hidden unicode found"
+
+      - name: Scan for hardcoded secrets patterns
+        run: |
+          echo "Scanning for hardcoded secret patterns..."
+          FAIL=0
+
+          # API key patterns
+          if rg -in 'api[_-]?key\s*[:=]\s*["\x27][A-Za-z0-9_\-]{20,}' \
+              --glob '!.git/**' \
+              --glob '!*.example.*' \
+              --glob '!*.template.*' \
+              --glob '!docs/**' \
+              --glob '!.github/**' \
+              . ; then
+            echo "FAIL: Possible hardcoded API key found"
+            FAIL=1
+          fi
+
+          # Bearer tokens
+          if rg -in 'bearer\s+[A-Za-z0-9_\-\.]{20,}' \
+              --glob '!.git/**' \
+              --glob '!*.example.*' \
+              --glob '!docs/**' \
+              . ; then
+            echo "FAIL: Possible hardcoded bearer token found"
+            FAIL=1
+          fi
+
+          # Generic secret = value patterns (skip template placeholders)
+          if rg -in '(secret|password|token)\s*[:=]\s*["\x27][^"\x27YOUR_PLACEHOLDER]{16,}["\x27]' \
+              --glob '!.git/**' \
+              --glob '!*.example.*' \
+              --glob '!*.template.*' \
+              --glob '!docs/**' \
+              --glob '!.github/**' \
+              . ; then
+            echo "FAIL: Possible hardcoded credential found"
+            FAIL=1
+          fi
+
+          if [ $FAIL -eq 0 ]; then
+            echo "PASS: No hardcoded secrets found"
+          else
+            exit 1
+          fi
+
+      - name: Scan for known secret prefixes
+        run: |
+          echo "Scanning for known secret-prefix patterns..."
+          FAIL=0
+
+          # nvapi- keys (NVIDIA)
+          if rg -n 'nvapi-[A-Za-z0-9_\-]{10,}' \
+              --glob '!.git/**' \
+              --glob '!*.example.*' \
+              --glob '!*.template.*' \
+              . ; then
+            echo "FAIL: nvapi- key pattern found"
+            FAIL=1
+          fi
+
+          # OpenAI / Anthropic sk- keys
+          if rg -n 'sk-[A-Za-z0-9]{20,}' \
+              --glob '!.git/**' \
+              --glob '!*.example.*' \
+              --glob '!*.template.*' \
+              . ; then
+            echo "FAIL: sk- key pattern found"
+            FAIL=1
+          fi
+
+          # GitHub tokens
+          if rg -nP '(gho_|ghp_)[A-Za-z0-9]{20,}' \
+              --glob '!.git/**' \
+              . ; then
+            echo "FAIL: GitHub token pattern found"
+            FAIL=1
+          fi
+
+          # AWS access keys
+          if rg -n 'AKIA[A-Z0-9]{16}' \
+              --glob '!.git/**' \
+              . ; then
+            echo "FAIL: AWS access key pattern found"
+            FAIL=1
+          fi
+
+          # Google API keys
+          if rg -n 'AIza[A-Za-z0-9_\-]{35}' \
+              --glob '!.git/**' \
+              . ; then
+            echo "FAIL: Google API key pattern found"
+            FAIL=1
+          fi
+
+          # Discord webhooks
+          if rg -n 'https?://discord(app)?\.com/api/webhooks/' \
+              --glob '!.git/**' \
+              --glob '!docs/**' \
+              . ; then
+            echo "FAIL: Discord webhook URL found"
+            FAIL=1
+          fi
+
+          # Generic PRIVATE KEY blocks
+          if rg -n '\-\-\-\-\-BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY\-\-\-\-\-' \
+              --glob '!.git/**' \
+              . ; then
+            echo "FAIL: Private key block found"
+            FAIL=1
+          fi
+
+          if [ $FAIL -eq 0 ]; then
+            echo "PASS: No known secret prefixes found"
+          else
+            exit 1
+          fi
+
+      - name: Check injection-safety preamble in AGENTS.md
+        run: |
+          echo "Checking injection-safety preamble in AGENTS.md..."
+          if ! grep -q "adoption-note\|optional adoption\|Nothing here is an imperative" AGENTS.md 2>/dev/null; then
+            echo "FAIL: AGENTS.md is missing the adoption-note preamble"
+            exit 1
+          fi
+          echo "PASS: AGENTS.md preamble present"
+
+      - name: Check for ANTHROPIC_BASE_URL overrides (CVE-2026-21852 pattern)
+        run: |
+          echo "Scanning for ANTHROPIC_BASE_URL overrides..."
+          if rg -n 'ANTHROPIC_BASE_URL' \
+              --glob '!.git/**' \
+              --glob '!docs/**' \
+              --glob '!.claude/rules/**' \
+              . ; then
+            echo "FAIL: ANTHROPIC_BASE_URL override found outside allowed contexts"
+            exit 1
+          fi
+          echo "PASS: No ANTHROPIC_BASE_URL overrides found"
+
+      - name: Scan for dangerous hook patterns
+        run: |
+          echo "Scanning for dangerous commands in hook/config examples..."
+          FAIL=0
+
+          for pattern in "curl.*|.*bash" "curl.*|.*sh" "wget.*|.*bash" "enableAllProjectMcpServers"; do
+            if rg -in "$pattern" \
+                --glob '!.git/**' \
+                --glob '!.github/**' \
+                --glob '!docs/**' \
+                --glob '!scripts/**' \
+                . ; then
+              echo "FAIL: Dangerous pattern found: '$pattern'"
+              FAIL=1
+            fi
+          done
+
+          if [ $FAIL -eq 0 ]; then
+            echo "PASS: No dangerous hook patterns found"
+          else
+            exit 1
+          fi

@@ -1,0 +1,94 @@
+{
+  "_comment": "Copy this file to settings.json and customize. Replace all <PLACEHOLDER> values.",
+  "model": "claude-opus-4-8",
+  "permissions": {
+    "deny": [
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(**/.env*)",
+      "Write(~/.ssh/**)",
+      "Write(~/.aws/**)",
+      "Bash(curl * | bash)",
+      "Bash(curl * | sh)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(nc *)",
+      "Bash(* ANTHROPIC_BASE_URL=*)"
+    ],
+    "allow": [
+      "Bash(git *)",
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(node *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(uv *)",
+      "Bash(curl *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(jq *)",
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)"
+    ]
+  },
+  "hooks": {
+    "_comment_hooks": "Hooks are DETERMINISTIC — they always fire regardless of what the assistant decides. Use hooks for actions that MUST happen every time. Replace placeholders before enabling.",
+    "PreToolUse": [
+      {
+        "_comment": "Example: gate any irreversible/money action. Exit code 2 blocks the tool call and sends feedback to the assistant.",
+        "matcher": "Bash|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/action_gate.py\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "_comment": "Print skill bank summary + session number at the start of each session.",
+            "type": "command",
+            "command": "python -c \"import sys,json,math,os; path=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR','.'), 'sdar/skill_bank.json'); f=open(path) if os.path.exists(path) else None; d=json.load(f) if f else {'total_sessions':0,'skills':{}}; f.close() if f else None; N=d['total_sessions']; skills=d.get('skills',{}); [s.update({'ucb_score':round(s['avg_reward']+0.5*math.sqrt(math.log(N+1)/(s['uses']+1)),3)}) for s in skills.values()]; top=sorted(skills.items(),key=lambda x:x[1]['ucb_score'],reverse=True)[:5]; print('\\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'); print(f'Eric  ·  Session #{N+1}  ·  Ready'); print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'); print('Top skills: ' + '  |  '.join(f[0]+' '+str(f[1]['ucb_score']) for f in top) if top else 'No skills logged yet — run /learn after your first session'); print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n')\" 2>/dev/null || echo '\\nEric ready.\\n'"
+          },
+          {
+            "_comment": "Inject recent session digest for continuity. Create sdar/recent-sessions.md to enable.",
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/session_recap.py\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "_comment": "Optional: send a notification when Claude Code finishes a long-running task. Replace webhook URL with your own (Discord, Slack, etc.).",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -X POST \"<YOUR_WEBHOOK_URL_HERE>\" -H 'Content-Type: application/json' -d '{\"content\":\"Eric finished a task.\"}' 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
+  "mcpServers": {
+    "_comment": "Add MCP servers here. Keep under 10 active per session — each tool definition consumes context window. Prefer CLI equivalents (gh, aws) when context is tight.",
+    "_example_filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "<YOUR_PROJECT_DIR>"],
+      "_note": "Remove the leading underscore from the key name to enable this server."
+    }
+  }
+}

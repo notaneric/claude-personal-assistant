@@ -1,0 +1,96 @@
+{
+  "_comment": "TEMPLATE — copy to skill_bank.json and populate as you run sessions. Do NOT edit skill_bank.json by hand during normal operation; /learn updates it automatically. Entries below mirror the 7 skills shipped in skills/. Add your own (local or external-by-URL) as you install them.",
+  "schema_version": "1.0",
+  "created": "YYYY-MM-DD",
+  "total_sessions": 0,
+  "beta": 5.0,
+  "exploration_c": 0.5,
+  "ucb_formula": "avg_reward + exploration_c * sqrt(ln(total_sessions + 1) / (uses + 1))",
+  "sigmoid_gate": "g = 1 / (1 + exp(-beta * delta))",
+  "skills": {
+    "grill-me": {
+      "domain": "planning",
+      "task_types": ["plan-review", "adversarial-critique", "architecture-stress-test", "direction-validation"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/grill-me/SKILL.md"
+    },
+    "humanizer": {
+      "domain": "writing",
+      "task_types": ["copy", "content", "prose", "email", "blog"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/humanizer/SKILL.md"
+    },
+    "verification-before-done": {
+      "domain": "quality",
+      "task_types": ["verification", "render-check", "test-before-report", "evidence-check"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/verification-before-done/SKILL.md"
+    },
+    "prompt-quality-gate": {
+      "domain": "meta",
+      "task_types": ["prompt-review", "prompt-engineering", "output-format", "context-compression"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/prompt-quality-gate/SKILL.md"
+    },
+    "generate-evaluate-repair": {
+      "domain": "meta",
+      "task_types": ["constrained-generation", "eval-loop", "iterative-repair", "compliance-check"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/generate-evaluate-repair/SKILL.md"
+    },
+    "skill-bank": {
+      "domain": "meta",
+      "task_types": ["ucb-retrieval", "skill-selection", "self-improvement", "reward-update"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/skill-bank/SKILL.md"
+    },
+    "context-discipline": {
+      "domain": "meta",
+      "task_types": ["context-management", "compaction", "window-optimization", "long-session"],
+      "uses": 0,
+      "successes": 0,
+      "avg_reward": 0.5,
+      "ucb_score": 1.3326,
+      "endorsed_patterns": [],
+      "attenuated_patterns": [],
+      "notes": [],
+      "source": "skills/context-discipline/SKILL.md"
+    }
+  }
+}

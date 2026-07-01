@@ -1,0 +1,119 @@
+# claude-personal-assistant
+
+> A complete, de-identified operating system for a Claude Code-based personal AI agent named **Eric**.
+> Ships a skill activation matrix, SDAR self-improvement framework, modular skills, hooks system,
+> slash-command set, and a sanitization pipeline for safe public publishing.
+> Creator: @notaneric. License: MIT.
+
+## Operating Manual
+
+[CLAUDE.md](CLAUDE.md) — The full Eric operating manual for Claude Code. Load this as your
+system prompt foundation. Contains: identity, prompt defense baseline, skill activation matrix
+(routing table mapping task types to skills), SDAR summary, and all operating rules
+(security, context, design, content, research, planning, communication). Always-on constraints only;
+task-specific knowledge lives in skills.
+
+## Agent Entry Point
+
+[AGENTS.md](AGENTS.md) — Cross-tool entry point for agent ingestion. Explains the repo structure,
+how to selectively adopt capabilities (single skill, routing matrix, SDAR loop, hooks, or full
+clone), the Always/Ask-first/Never boundary table, and a concrete one-skill adoption example.
+Open with an injection-safety adoption-note preamble.
+
+## Self-Improvement System
+
+[sdar/README.md](sdar/README.md) — Full SDAR (Self-Distilled Agentic RL) algorithm: UCB retrieval,
+sigmoid gate formula, skill endorsement/attenuation logic. Use this to understand or reproduce
+the learning loop.
+
+[sdar/skill_bank.template.json](sdar/skill_bank.template.json) — Neutral-prior skill bank template
+(uses: 0, avg_reward: 0.5 for all entries). Copy and populate with your own skill domains to
+start the SDAR loop from a blank slate.
+
+## Skills
+
+[skills/grill-me/SKILL.md](skills/grill-me/SKILL.md) — Adversarial plan stress-tester. Activates
+before any significant design direction, architecture decision, or new feature. Finds problems
+before build starts.
+
+[skills/humanizer/SKILL.md](skills/humanizer/SKILL.md) — Prose quality gate. Strips AI tells
+("delve into", "it's important to note"), filler openers, em-dash overuse, and vague adjectives.
+Auto-activates on any writing or copy task.
+
+[skills/verification-before-done/SKILL.md](skills/verification-before-done/SKILL.md) — Enforces
+visual or runtime verification before any task is declared complete. Prevents false "done"
+declarations without evidence.
+
+[skills/prompt-quality-gate/SKILL.md](skills/prompt-quality-gate/SKILL.md) — Catches vague,
+conflicting, or low-density prompts before execution. Flags the issue and proposes a restructured
+version for approval.
+
+[skills/generate-evaluate-repair/SKILL.md](skills/generate-evaluate-repair/SKILL.md) — 3-step
+constrained generation loop: generate (minimal prompt) → evaluate (list failures, not a score)
+→ repair (targeted fixes). Outperforms single mega-prompts on complex constrained tasks.
+
+[skills/skill-bank/SKILL.md](skills/skill-bank/SKILL.md) — UCB-scored skill retrieval and SDAR
+update logic. Checks the skill bank before any task, retrieves top-k skills by domain, and wires
+the sigmoid gate update at session end.
+
+[skills/context-discipline/SKILL.md](skills/context-discipline/SKILL.md) — Context window hygiene:
+compact triggers at ~60% usage, clear-point detection, MCP count limits, and session strategy
+(continue vs. fresh start). Keeps the context window healthy over long sessions.
+
+## External Skills (referenced by link — not vendored)
+
+These are third-party skills available at the links below. Reference them in your activation matrix
+rather than copying their files into this repo.
+
+- **Design taste filter** — [impeccable](https://github.com/pbakaus/impeccable)
+- **Fan-out research with citation verification** — [deep-research](https://github.com/dzhng/deep-research)
+- **Knowledge graph builder** — [graphify](https://github.com/safishamsi/graphify)
+- **Social-scored research (Reddit/X/YouTube/HN/GitHub)** — [last30days](https://github.com/mvanhorn/last30days-skill)
+
+## Rules
+
+[.claude/rules/security.md](.claude/rules/security.md) — Prompt defense baseline, permission deny
+list patterns, untrusted content handling, secrets access via password manager, memory security,
+skill supply-chain scanning, and observability requirements for autonomous loops.
+
+[.claude/rules/performance.md](.claude/rules/performance.md) — Model tier routing (Haiku/Sonnet/Opus),
+effort levels (low/medium/high/xhigh/max), external model offload lane, message array discipline
+for cache optimization, context window discipline, and session strategy.
+
+[.claude/rules/agents.md](.claude/rules/agents.md) — Multi-agent orchestration: parallel dispatch,
+subagent design principles, delegation triggers, structured output format, eval loop pattern,
+generate→evaluate→repair loop, MCP scope rule, memory architecture (3 tiers), and hooks reference.
+
+## Configuration
+
+[.claude/settings.example.json](.claude/settings.example.json) — Sanitized template for Claude
+Code settings. Includes hooks (PreToolUse gate for irreversible actions, postToolUse formatters,
+stop hook for session audit), permissions allowlist, and MCP config stubs.
+
+## Commands
+
+[.claude/commands/](`.claude/commands/`) — Slash command implementations. Includes: `/learn`
+(session feedback → skill bank update), `/reflect` (pattern analysis → CLAUDE.md improvements),
+`/status` (current skill scores + vault stats), `/grill` (adversarial stress-test), `/research`,
+`/design`, `/write`, and more.
+
+## Docs
+
+[docs/SETUP.md](docs/SETUP.md) — First-time configuration: identity, knowledge vault path,
+permissions, and verification steps.
+
+[docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md) — How to extend skills, add commands, write new
+rules, and adapt the skill activation matrix to your own workflow.
+
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — System design: SDAR loop diagram, hook chain,
+context flow, memory tier model (ephemeral/working/long-term).
+
+## Scripts
+
+[scripts/publish.sh](scripts/publish.sh) — POSIX sanitization pipeline. Scrubs personal data
+before any public push. Run before every sync to the public mirror.
+
+[scripts/publish.ps1](scripts/publish.ps1) — PowerShell equivalent of the sanitization pipeline.
+
+[scripts/allowlist.example.yml](scripts/allowlist.example.yml) — Default-deny allowlist for the
+sync gate. Defines which paths and tokens are safe to publish.

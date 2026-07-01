@@ -1,0 +1,247 @@
+# allowlist.example.yml — copy this to allowlist.yml and edit for your repo.
+#
+# HOW IT WORKS
+# ------------
+# The publish pipeline is default-DENY: nothing in your private source repo reaches
+# the public output unless it appears here with `publish: true`.
+#
+# This keeps your personal configs, private skill scores, client data, and local
+# paths from accidentally appearing in the public template.
+#
+# USAGE
+# -----
+# 1. Copy this file to scripts/allowlist.yml (git-ignored by default).
+# 2. Set publish: true for anything you want in the public output.
+# 3. Run `scripts/publish.sh` (POSIX) or `scripts/publish.ps1` (Windows).
+#    - The pipeline copies allowed files, runs token substitution, and
+#      scans for secrets/scrub-list hits. It will NOT push unless you
+#      pass the --confirm flag manually.
+# 4. Review the printed summary before confirming.
+#
+# GLOB PATTERNS
+# -------------
+# Paths are relative to the repo root of your PRIVATE source repo.
+# Glob patterns are evaluated with standard ** expansion.
+# A file must be listed (or matched by a pattern) with publish: true.
+# Any file not listed defaults to publish: false.
+#
+# OWNER-SCRUB TOKENS
+# ------------------
+# Tokens listed under `scrub_tokens` are checked by the scanner — if any
+# appear in files that would be published, the pipeline aborts.
+# Add your real name, email, client names, company names, etc.
+# The default set below matches the template spec; extend it for your fork.
+
+# ---------------------------------------------------------------------------
+# OWNER IDENTITY — fill in your details; these are checked against output
+# ---------------------------------------------------------------------------
+owner:
+  # Your real name (any form) — must NOT appear in published files
+  name: "YOUR_REAL_NAME"
+  # Your real email — must NOT appear in published files
+  email: "YOUR_REAL_EMAIL"
+  # Any additional real-name aliases or handle variants
+  aliases: []
+
+# ---------------------------------------------------------------------------
+# SCRUB TOKENS — pipeline aborts if any of these appear in output files
+# ---------------------------------------------------------------------------
+# These are checked as case-insensitive substring matches.
+# Add names of clients, companies, projects, or any PII you want to block.
+scrub_tokens:
+  # --- People ---
+  - "YOUR_REAL_NAME"       # replace with your actual name
+  - "YOUR_REAL_EMAIL"      # replace with your actual email
+  # --- Clients / companies (add your own) ---
+  # - "CLIENT_NAME"
+  # - "AcmeCorp"
+  # --- Secret patterns (the scanner also runs regex; these are belt-and-suspenders) ---
+  # These catch common patterns the regex scanner might miss if obfuscated:
+  # - "nvapi-"             # NVIDIA API key prefix
+  # - "sk-"                # OpenAI / Anthropic style secret key
+  # - "webhook.site"       # accidental webhook exposure
+
+# ---------------------------------------------------------------------------
+# PUBLISH ALLOWLIST
+# ---------------------------------------------------------------------------
+# Default: publish: false for everything. Set publish: true to include.
+# Order does not matter; the scanner processes all entries before copying.
+
+files:
+  # Root docs
+  - path: "README.md"
+    publish: true
+
+  - path: "AGENTS.md"
+    publish: true
+
+  - path: "llms.txt"
+    publish: true
+
+  - path: "CLAUDE.md"
+    publish: true
+
+  - path: "LICENSE"
+    publish: true
+
+  - path: "CHANGELOG.md"
+    publish: true
+
+  - path: ".gitignore"
+    publish: true
+
+  # Rules
+  - path: ".claude/rules/security.md"
+    publish: true
+
+  - path: ".claude/rules/performance.md"
+    publish: true
+
+  - path: ".claude/rules/agents.md"
+    publish: true
+
+  # Settings template (sanitized, no real paths or webhook URLs)
+  - path: ".claude/settings.example.json"
+    publish: true
+
+  # Commands — ONLY genuinely generic ones
+  - path: ".claude/commands/learn.md"
+    publish: true
+
+  - path: ".claude/commands/reflect.md"
+    publish: true
+
+  - path: ".claude/commands/status.md"
+    publish: true
+
+  - path: ".claude/commands/research.md"
+    publish: true
+
+  - path: ".claude/commands/design.md"
+    publish: true
+
+  - path: ".claude/commands/write.md"
+    publish: true
+
+  - path: ".claude/commands/grill.md"
+    publish: true
+
+  - path: ".claude/commands/automate.md"
+    publish: true
+
+  - path: ".claude/commands/security-audit.md"
+    publish: true
+
+  # SDAR self-improvement system
+  - path: "sdar/skill_bank.template.json"
+    publish: true
+
+  - path: "sdar/README.md"
+    publish: true
+
+  # Skills — only generic originals; list each explicitly
+  # External / third-party skills are referenced by link in AGENTS.md,
+  # never vendored here. Only list skills you wrote and own.
+  - path: "skills/grill-me/SKILL.md"
+    publish: true
+
+  - path: "skills/humanizer/SKILL.md"
+    publish: true
+
+  - path: "skills/verification-before-done/SKILL.md"
+    publish: true
+
+  - path: "skills/prompt-quality-gate/SKILL.md"
+    publish: true
+
+  - path: "skills/generate-evaluate-repair/SKILL.md"
+    publish: true
+
+  - path: "skills/skill-bank/SKILL.md"
+    publish: true
+
+  - path: "skills/context-discipline/SKILL.md"
+    publish: true
+
+  # Docs
+  - path: "docs/SETUP.md"
+    publish: true
+
+  - path: "docs/CUSTOMIZATION.md"
+    publish: true
+
+  - path: "docs/ARCHITECTURE.md"
+    publish: true
+
+  # GitHub meta
+  - path: ".github/CONTRIBUTING.md"
+    publish: true
+
+  - path: ".github/CODE_OF_CONDUCT.md"
+    publish: true
+
+  - path: ".github/SECURITY.md"
+    publish: true
+
+  - path: ".github/pull_request_template.md"
+    publish: true
+
+  - path: ".github/ISSUE_TEMPLATE/bug_report.md"
+    publish: true
+
+  - path: ".github/ISSUE_TEMPLATE/feature_request.md"
+    publish: true
+
+  - path: ".github/workflows/ci.yml"
+    publish: true
+
+  # Scripts themselves — publish so adopters can run their own pipeline
+  - path: "scripts/publish.sh"
+    publish: true
+
+  - path: "scripts/publish.ps1"
+    publish: true
+
+  - path: "scripts/allowlist.example.yml"
+    publish: true
+
+  - path: "scripts/README.md"
+    publish: true
+
+  # ---------------------------------------------------------------------------
+  # EXPLICITLY BLOCKED — kept here as documentation of what must NOT publish
+  # ---------------------------------------------------------------------------
+
+  # Private skill bank with real scores — publish the TEMPLATE only
+  - path: "sdar/skill_bank.json"
+    publish: false
+
+  # private working memory, logs, pending specs — never public
+  - path: ".private/**"
+    publish: false
+
+  # Personal memory files
+  - path: ".claude/agents/**"
+    publish: false
+
+  # Any .env or credential files
+  - path: "**/.env*"
+    publish: false
+
+  # Private deliverables
+  - path: "deliverables/**"
+    publish: false
+
+  # Local MCP configs that may contain real paths or tokens
+  - path: ".mcp.json"
+    publish: false
+
+  # Any file with "local" or "private" in the name — catch-all
+  - path: "**/*local*"
+    publish: false
+
+  - path: "**/*private*"
+    publish: false
+
+  - path: "**/*personal*"
+    publish: false
