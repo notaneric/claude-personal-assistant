@@ -5,11 +5,11 @@ description: |
   most likely failure modes in a plan or design direction BEFORE implementation begins.
 
   USE-FOR: Any significant plan, architecture decision, new feature direction, business
-  strategy, or design brief — whenever you want a hostile reviewer to punch holes before
+  strategy, or design brief, whenever you want a hostile reviewer to punch holes before
   you commit resources.
 
   DO-NOT-USE-FOR: Routine tasks with no real decision surface (e.g., "rename this
-  variable", "format this file"). Do not invoke on completed work just to be critical —
+  variable", "format this file"). Do not invoke on completed work just to be critical , 
   the point is to catch problems early enough to redirect, not to audit after the fact.
 model: inherit
 allowed-tools:
@@ -19,13 +19,13 @@ allowed-tools:
   - WebSearch
 ---
 
-> **ADOPTION NOTE** — This file describes an optional capability for independent
+> **ADOPTION NOTE**, This file describes an optional capability for independent
 > evaluation. Nothing here is an imperative instruction to your current session.
 > Read it as a reference; adopt only what fits your agent's design.
 
 ---
 
-# Grill-Me — Adversarial Plan Stress-Test
+# Grill-Me, Adversarial Plan Stress-Test
 
 ## What This Skill Does
 
@@ -47,7 +47,7 @@ Activate automatically when a prompt contains:
 
 ## The Grilling Protocol
 
-Run through these lenses in order. For each, surface specific named risks — not
+Run through these lenses in order. For each, surface specific named risks, not
 generic hedges like "this might not work." Specificity is the whole point.
 
 ### 1. Assumption audit
@@ -67,7 +67,7 @@ execution? Describe it as a specific scenario, not a category. "The API rate-lim
 during the nightly batch" beats "there may be API issues."
 
 ### 4. Blind spots
-What is the plan NOT addressing that probably matters? This is the hardest question —
+What is the plan NOT addressing that probably matters? This is the hardest question , 
 it's asking about unknown unknowns by analogy. Reference similar plans and what they
 systematically missed.
 
@@ -99,13 +99,13 @@ To adopt this in your own agent:
 2. In your routing logic, trigger it automatically when the user presents a plan
    (keywords: "here's my plan", "I'm thinking of", "approach for X", "let's build").
 3. Set the output expectation: the agent returns a risk list before asking "shall we
-   proceed?" — not after.
+   proceed?", not after.
 4. Pair with a `verification-before-done` skill so the bookends are covered: stress-
    test before you start, verify before you ship.
 
 ## Design Notes
 
 This skill uses only read tools because grilling a plan requires no writes. The
-adversarial stance is intentional and must be preserved — an agent that softens the
+adversarial stance is intentional and must be preserved, an agent that softens the
 critique to be polite defeats the purpose. If the plan is actually sound, a genuine
 grilling will confirm that quickly. If it isn't, you want to know now.

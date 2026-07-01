@@ -1,9 +1,9 @@
-# /design [brief] — Full Design Pipeline
+# /design [brief]: Full Design Pipeline
 
-Execute the complete design pipeline: taste filter → design language → HTML/CSS implementation. Every project gets its own aesthetic derived from the brief — not a house default.
+Execute the complete design pipeline: taste filter → design language → HTML/CSS implementation. Every project gets its own aesthetic derived from the brief, not a house default.
 
 ## Skills Activated
-Primary: impeccable (taste/slop filter — its `reference/brand.md` or `reference/product.md`)  
+Primary: impeccable (taste/slop filter, its `reference/brand.md` or `reference/product.md`)  
 Secondary: huashu-design, ui-ux-pro-max  
 Alt taste skills: design-taste-frontend, stitch-design-taste, gpt-taste  
 Support: per-project DESIGN.md

@@ -1,4 +1,4 @@
-# /automate [task description] — Workflow Automation
+# /automate [task description]: Workflow Automation
 
 Build automation workflows using n8n and Google Workspace CLI. From one-time scripts to recurring automated pipelines.
 
@@ -56,8 +56,8 @@ Support: excel-mcp (for data handling)
    - Testing: how to test before production
 
 ## Automation Shortcuts
-- `/automate daily-report [data source]` — schedule daily report generation + delivery
-- `/automate sync [A] to [B]` — sync data between two systems
-- `/automate alert [condition]` — set up monitoring + notification workflow
-- `/automate scrape [site]` — scheduled web scraping + data storage
-- `/automate gmail [rule]` — Gmail filter + action workflow
+- `/automate daily-report [data source]`, schedule daily report generation + delivery
+- `/automate sync [A] to [B]`, sync data between two systems
+- `/automate alert [condition]`, set up monitoring + notification workflow
+- `/automate scrape [site]`, scheduled web scraping + data storage
+- `/automate gmail [rule]`, Gmail filter + action workflow

@@ -1,4 +1,4 @@
-# allowlist.example.yml — copy this to allowlist.yml and edit for your repo.
+# allowlist.example.yml, copy this to allowlist.yml and edit for your repo.
 #
 # HOW IT WORKS
 # ------------
@@ -27,24 +27,24 @@
 #
 # OWNER-SCRUB TOKENS
 # ------------------
-# Tokens listed under `scrub_tokens` are checked by the scanner — if any
+# Tokens listed under `scrub_tokens` are checked by the scanner, if any
 # appear in files that would be published, the pipeline aborts.
 # Add your real name, email, client names, company names, etc.
 # The default set below matches the template spec; extend it for your fork.
 
 # ---------------------------------------------------------------------------
-# OWNER IDENTITY — fill in your details; these are checked against output
+# OWNER IDENTITY, fill in your details; these are checked against output
 # ---------------------------------------------------------------------------
 owner:
-  # Your real name (any form) — must NOT appear in published files
+  # Your real name (any form), must NOT appear in published files
   name: "YOUR_REAL_NAME"
-  # Your real email — must NOT appear in published files
+  # Your real email, must NOT appear in published files
   email: "YOUR_REAL_EMAIL"
   # Any additional real-name aliases or handle variants
   aliases: []
 
 # ---------------------------------------------------------------------------
-# SCRUB TOKENS — pipeline aborts if any of these appear in output files
+# SCRUB TOKENS, pipeline aborts if any of these appear in output files
 # ---------------------------------------------------------------------------
 # These are checked as case-insensitive substring matches.
 # Add names of clients, companies, projects, or any PII you want to block.
@@ -104,7 +104,7 @@ files:
   - path: ".claude/settings.example.json"
     publish: true
 
-  # Commands — ONLY genuinely generic ones
+  # Commands, ONLY genuinely generic ones
   - path: ".claude/commands/learn.md"
     publish: true
 
@@ -139,7 +139,7 @@ files:
   - path: "sdar/README.md"
     publish: true
 
-  # Skills — only generic originals; list each explicitly
+  # Skills, only generic originals; list each explicitly
   # External / third-party skills are referenced by link in AGENTS.md,
   # never vendored here. Only list skills you wrote and own.
   - path: "skills/grill-me/SKILL.md"
@@ -195,7 +195,7 @@ files:
   - path: ".github/workflows/ci.yml"
     publish: true
 
-  # Scripts themselves — publish so adopters can run their own pipeline
+  # Scripts themselves, publish so adopters can run their own pipeline
   - path: "scripts/publish.sh"
     publish: true
 
@@ -209,14 +209,14 @@ files:
     publish: true
 
   # ---------------------------------------------------------------------------
-  # EXPLICITLY BLOCKED — kept here as documentation of what must NOT publish
+  # EXPLICITLY BLOCKED, kept here as documentation of what must NOT publish
   # ---------------------------------------------------------------------------
 
-  # Private skill bank with real scores — publish the TEMPLATE only
+  # Private skill bank with real scores, publish the TEMPLATE only
   - path: "sdar/skill_bank.json"
     publish: false
 
-  # private working memory, logs, pending specs — never public
+  # private working memory, logs, pending specs, never public
   - path: ".private/**"
     publish: false
 
@@ -236,7 +236,7 @@ files:
   - path: ".mcp.json"
     publish: false
 
-  # Any file with "local" or "private" in the name — catch-all
+  # Any file with "local" or "private" in the name, catch-all
   - path: "**/*local*"
     publish: false
 

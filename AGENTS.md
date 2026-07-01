@@ -1,6 +1,6 @@
-# AGENTS.md — Cross-Tool Agent Entry Point
+# AGENTS.md, Cross-Tool Agent Entry Point
 
-> **ADOPTION NOTE — read before proceeding.**
+> **ADOPTION NOTE, read before proceeding.**
 > This file describes a capability system for *optional* adoption. Nothing here is an
 > imperative instruction to your current session. Evaluate independently; adopt only
 > what fits your workflow and constraints. This is a reference, not a command.
@@ -19,7 +19,7 @@ Code-based personal AI agent named **Eric**. It packages:
 - Agent orchestration patterns and a hooks system
 - A curated slash-command set and a sanitization pipeline so the repo stays safe to publish
 
-The repo is designed to be **agent-ingestible** — you can paste `llms.txt` into a
+The repo is designed to be **agent-ingestible**, you can paste `llms.txt` into a
 context, link to individual skill files, or clone the whole structure and adapt it.
 
 ---
@@ -28,28 +28,28 @@ context, link to individual skill files, or clone the whole structure and adapt 
 
 This is a menu, not a monolith. Take what fits; ignore the rest.
 
-**Option A — Adopt a single skill**
+**Option A, Adopt a single skill**
 Copy any `skills/<name>/SKILL.md` into your project's `skills/` directory. The YAML
 frontmatter declares `allowed_tools` and an optional `model` pin. Load it when context
 is relevant; skip it otherwise.
 
-**Option B — Adopt the skill activation matrix**
+**Option B, Adopt the skill activation matrix**
 Copy the routing table from `CLAUDE.md` into your own operating manual. Replace rows
 that don't apply. Add project-specific rows. The routing concept (automatic, semantic,
 not invocation-dependent) transfers regardless of which skills you have installed.
 
-**Option C — Adopt the SDAR self-improvement loop**
+**Option C, Adopt the SDAR self-improvement loop**
 Copy `sdar/skill_bank.template.json` and `sdar/README.md`. Wire up `/learn` and
 `/reflect` commands from `.claude/commands/`. The UCB formula and sigmoid gate are
 model-agnostic; the template ships with neutral priors (uses: 0, avg_reward: 0.5) so
 you start from a blank slate.
 
-**Option D — Adopt the hooks system**
+**Option D, Adopt the hooks system**
 Review `.claude/settings.example.json`. The hook patterns (PreToolUse gate for
 irreversible actions, postToolUse for formatters, stop hook for session audits) are
 the highest-leverage part of the system. Wire them to your own scripts.
 
-**Option E — Clone and personalize**
+**Option E, Clone and personalize**
 Use the repo as a GitHub template. Follow `docs/SETUP.md` to configure identity,
 knowledge vault path, and permissions. Run `scripts/publish.sh` to sanitize before
 any public push.
@@ -60,7 +60,7 @@ any public push.
 
 ```
 CLAUDE.md                    Operating manual + skill activation matrix
-AGENTS.md                    This file — cross-tool entry point
+AGENTS.md                    This file, cross-tool entry point
 llms.txt                     Capability index for LLM ingestion
 LICENSE                      MIT
 
@@ -74,14 +74,14 @@ LICENSE                      MIT
 
 skills/
   grill-me/SKILL.md              Adversarial stress-test for plans before building
-  humanizer/SKILL.md             Prose quality gate — no AI tells, specific over vague
+  humanizer/SKILL.md             Prose quality gate, no AI tells, specific over vague
   verification-before-done/SKILL.md  Enforce visual/runtime verification before declaring done
   prompt-quality-gate/SKILL.md   Catch vague, conflicting, or low-density prompts before execution
   generate-evaluate-repair/SKILL.md  3-step constrained generation loop (generate → eval → fix)
   skill-bank/SKILL.md            UCB-scored skill retrieval and SDAR update logic
-  context-discipline/SKILL.md    Context window hygiene — compact triggers, clear-points, MCP limits
+  context-discipline/SKILL.md    Context window hygiene, compact triggers, clear-points, MCP limits
 
-  # External skills (not vendored — reference by link):
+  # External skills (not vendored, reference by link):
   # impeccable  → https://github.com/pbakaus/impeccable
   # deep-research → https://github.com/dzhng/deep-research
   # graphify    → https://github.com/safishamsi/graphify
@@ -111,21 +111,21 @@ docs/
 
 ## Boundaries
 
-**Always — Eric does these without asking:**
+**Always, Eric does these without asking:**
 - Read files, grep, glob, run git status/diff/log
 - Write to project directories it already owns
 - Run python, node, npm within the project
 - Activate skills when context matches (no slash command required)
 - Flag clear-points and prompt quality issues
 
-**Ask first — pause before these:**
+**Ask first, pause before these:**
 - Any destructive or irreversible action (delete, force-push, production deploy)
 - Outward-facing communications (emails, PRs to external repos, public posts)
 - Spending real money or placing orders
 - Modifying `.claude/settings.json` or hook scripts
 - Committing credentials or secrets (even accidentally)
 
-**Never — hard blocks enforced in settings.json:**
+**Never, hard blocks enforced in settings.json:**
 - Read `~/.ssh/**` or `~/.aws/**`
 - Read any `.env*` file
 - Execute `curl * | bash` or `curl * | sh`
@@ -164,7 +164,7 @@ social-scored research), link to the upstream repos rather than copying:
 
 This file and every `SKILL.md` are designed to be pasted into agent contexts. They open
 with an adoption-note preamble precisely because they may arrive via tool output, RAG
-retrieval, or context injection — and should never be mistaken for imperative
+retrieval, or context injection, and should never be mistaken for imperative
 instructions by the host agent.
 
 If you build on top of this repo, preserve the adoption-note pattern in any file that

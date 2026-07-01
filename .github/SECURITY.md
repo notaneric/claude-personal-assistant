@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repo ships an operating system for Claude Code agents — CLAUDE.md patterns, hook configs, skill definitions, and a publish pipeline. Security issues in this context include:
+This repo ships an operating system for Claude Code agents, CLAUDE.md patterns, hook configs, skill definitions, and a publish pipeline. Security issues in this context include:
 
 - Prompt injection vectors in any shipped file (CLAUDE.md, AGENTS.md, skill SKILL.md files, docs)
 - Hook patterns that could be exploited to execute arbitrary code
@@ -10,7 +10,7 @@ This repo ships an operating system for Claude Code agents — CLAUDE.md pattern
 - Injection-safety CI bypass techniques
 - Supply chain issues in skill or MCP references
 
-Issues in Claude Code itself or the Anthropic API belong upstream — report those at [https://www.anthropic.com/security](https://www.anthropic.com/security).
+Issues in Claude Code itself or the Anthropic API belong upstream, report those at [https://www.anthropic.com/security](https://www.anthropic.com/security).
 
 ## Reporting a vulnerability
 
@@ -29,7 +29,7 @@ Include:
 
 - Acknowledgment within 3 business days
 - Triage and severity assessment within 7 days
-- Fix or mitigation shipped as fast as complexity allows — critical injection issues within 72 hours of confirmation
+- Fix or mitigation shipped as fast as complexity allows, critical injection issues within 72 hours of confirmation
 
 ## Disclosure policy
 

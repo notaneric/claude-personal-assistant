@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-session_recap.py — SessionStart hook for Claude Code
+session_recap.py, SessionStart hook for Claude Code
 =====================================================
 Prints a short context recap at the start of every Claude Code session:
   - Current git branch and working-tree status

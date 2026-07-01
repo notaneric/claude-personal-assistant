@@ -1,4 +1,4 @@
-# /research [topic] — Deep Iterative Research Agent
+# /research [topic]: Deep Iterative Research Agent
 
 Run a multi-iteration research pipeline on any topic. Synthesizes web sources, your knowledge vault, and structured analysis into a cited report.
 
@@ -39,7 +39,7 @@ Support: graphify (check knowledge vault first)
    [2-3 sentence summary]
    
    ## Key Findings
-   1. **[Finding]** — [evidence] ([source])
+   1. **[Finding]**, [evidence] ([source])
    2. ...
    
    ## Evidence Base
@@ -58,9 +58,9 @@ Support: graphify (check knowledge vault first)
 6. **Update skill bank**: record research task + outcome for `/learn`
 
 ## Research Depth Options
-- `/research brief [topic]` — 1 iteration, fast overview
-- `/research [topic]` — default (3-4 iterations)
-- `/research deep [topic]` — 5+ iterations, maximum coverage
+- `/research brief [topic]`, 1 iteration, fast overview
+- `/research [topic]`, default (3-4 iterations)
+- `/research deep [topic]`, 5+ iterations, maximum coverage
 
 ## Research Standards (mandatory)
 
@@ -73,4 +73,4 @@ Support: graphify (check knowledge vault first)
 **Any numerical figure from memory → verify with search before citing.**
 
 ## Domain-Specific Routing
-- Academic paper writing (literature review, peer review, citation management) → use `/academic` pipeline — dedicated multi-agent pipeline, not this command
+- Academic paper writing (literature review, peer review, citation management) → use `/academic` pipeline, dedicated multi-agent pipeline, not this command

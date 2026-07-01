@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for considering a contribution to `claude-personal-assistant`. This is an opinionated template — contributions that make it more useful to a wider audience are welcome; contributions that re-introduce personal data or break injection safety are not.
+Thanks for considering a contribution to `claude-personal-assistant`. This is an opinionated template, contributions that make it more useful to a wider audience are welcome; contributions that re-introduce personal data or break injection safety are not.
 
 ## What belongs here
 
@@ -12,7 +12,7 @@ Thanks for considering a contribution to `claude-personal-assistant`. This is an
 ## What does not belong here
 
 - Personal data of any kind (real names, emails, API keys, project specifics, financial data)
-- Third-party skills vendored directly — link to the upstream repo instead
+- Third-party skills vendored directly, link to the upstream repo instead
 - Changes that weaken the prompt defense baseline or permit-deny list without a documented security rationale
 
 ## Getting started

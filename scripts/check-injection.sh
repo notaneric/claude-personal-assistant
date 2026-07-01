@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# check-injection.sh — injection-safety scanner (Bash/POSIX)
+# check-injection.sh, injection-safety scanner (Bash/POSIX)
 # ===========================================================
 # Scans the repository for:
 #   1. Hidden unicode characters that can be used for prompt injection
@@ -11,8 +11,8 @@
 #   (default path: repo root, auto-detected via git)
 #
 # Exit codes:
-#   0 — clean
-#   1 — one or more findings; details printed to stdout
+#   0, clean
+#   1, one or more findings; details printed to stdout
 #
 # Used by .github/workflows/ci.yml and recommended as a pre-push hook.
 # No external tools required beyond grep and git.
@@ -28,7 +28,7 @@ SCAN_EXTENSIONS="py ts tsx js jsx md sh ps1 yaml yml json txt"
 
 # Secret-prefix patterns (regex alternation). These are the first few chars
 # that distinguish common API key formats. Adjust to your key providers.
-# Pattern is intentionally kept broad — tune to cut false positives.
+# Pattern is intentionally kept broad, tune to cut false positives.
 SECRET_PATTERN="(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{36,}|xoxb-[0-9]|AIza[0-9A-Za-z_-]{35,}|AKIA[0-9A-Z]{16,})"
 
 # ---------------------------------------------------------------------------
@@ -46,7 +46,7 @@ for ext in $SCAN_EXTENSIONS; do
 done
 
 # ---------------------------------------------------------------------------
-# SCAN 1: Hidden unicode (escape sequences — no literal control chars in source)
+# SCAN 1: Hidden unicode (escape sequences, no literal control chars in source)
 # ---------------------------------------------------------------------------
 
 echo "==> Scanning for hidden unicode in: $SCAN_PATH"

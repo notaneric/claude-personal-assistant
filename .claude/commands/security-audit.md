@@ -1,4 +1,4 @@
-# /security-audit [target] — Security Analysis & Threat Modeling
+# /security-audit [target]: Security Analysis & Threat Modeling
 
 Structured security analysis for code audits, threat modeling, and defensive security work. Mapped to five frameworks across 26 domains.
 
@@ -6,7 +6,7 @@ Structured security analysis for code audits, threat modeling, and defensive sec
 Primary: cybersecurity  
 Secondary: deep-research, graphify (for codebase context)
 
-## Scope — What This Command Is For
+## Scope: What This Command Is For
 - Code security reviews (your own projects)
 - Threat modeling and architecture reviews
 - Dependency vulnerability scanning
@@ -28,7 +28,7 @@ NOT for: attacks on systems you don't own, DoS, credential stuffing, social engi
 
 ## Modes
 ```
-/security-audit code [file or dir]     # Code review — OWASP Top 10 + language-specific
+/security-audit code [file or dir]     # Code review, OWASP Top 10 + language-specific
 /security-audit deps [package.json]    # Dependency vulnerability scan
 /security-audit threat-model [system]  # Threat modeling session
 /security-audit ai [system brief]      # AI/ML security audit (ATLAS + AI RMF)
@@ -80,7 +80,7 @@ When `/security-audit self` is invoked, check each item and report PASS / FAIL /
 
 ## Output Format
 ```markdown
-# Security Audit — [Target] — [Date]
+# Security Audit: [Target], [Date]
 
 ## Risk Summary
 Overall: [Critical / High / Medium / Low]
@@ -99,9 +99,9 @@ Findings: [N] total | [X] critical | [Y] high | [Z] medium
 Attack surface → attack vectors → mitigations mapped
 
 ## Recommended Actions (prioritized)
-1. [Immediate — fix before next deploy]
-2. [Short-term — fix this sprint]
-3. [Long-term — architecture change]
+1. [Immediate, fix before next deploy]
+2. [Short-term, fix this sprint]
+3. [Long-term, architecture change]
 
 ## Framework Coverage
 [Which MITRE/NIST controls are satisfied vs gaps]

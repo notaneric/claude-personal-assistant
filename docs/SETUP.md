@@ -7,7 +7,7 @@ Get Eric running in under 10 minutes.
 - [Claude Code](https://docs.anthropic.com/claude-code) installed and authenticated
 - Git
 - Python 3.10+ (for the SDAR skill bank and publish pipeline)
-- Node.js 18+ (optional — only needed if you add Node-based hooks or tools)
+- Node.js 18+ (optional, only needed if you add Node-based hooks or tools)
 
 ## Installation
 
@@ -33,7 +33,7 @@ grep -rl "Eric" . \
   | xargs sed -i 's/Eric/YOUR_NAME/g'
 ```
 
-Or leave it as Eric — the joke works.
+Or leave it as Eric, the joke works.
 
 ### 3. Copy and customize settings
 
@@ -54,7 +54,7 @@ The example file includes inline comments explaining each field.
 cp sdar/skill_bank.template.json sdar/skill_bank.json
 ```
 
-This creates your local skill bank with neutral priors (all scores at 0.5). The SDAR loop will tune these over time as you use the system. The `sdar/skill_bank.json` file is gitignored — it's personal state, not template state.
+This creates your local skill bank with neutral priors (all scores at 0.5). The SDAR loop will tune these over time as you use the system. The `sdar/skill_bank.json` file is gitignored, it's personal state, not template state.
 
 ### 5. Set up your knowledge vault (optional)
 
@@ -68,7 +68,7 @@ Eric's research and memory flow through a knowledge vault. Any directory of Mark
 }
 ```
 
-If you use Obsidian, point this at your vault root. If you don't have one yet, create an empty directory — the `/graphify` command will populate it over time.
+If you use Obsidian, point this at your vault root. If you don't have one yet, create an empty directory, the `/graphify` command will populate it over time.
 
 ### 6. Verify the install
 
@@ -86,7 +86,7 @@ Eric should report: active skills, skill bank entry count, and knowledge vault s
 - [ ] `sdar/skill_bank.json` exists (copied from template)
 - [ ] Persona name is what you want
 - [ ] Knowledge vault path set (or skipped for now)
-- [ ] Run `/status` — no errors
+- [ ] Run `/status`, no errors
 
 ## Updating
 

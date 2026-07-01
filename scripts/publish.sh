@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# publish.sh — living-mirror publish pipeline (POSIX / Linux / macOS / Git Bash)
+# publish.sh, living-mirror publish pipeline (POSIX / Linux / macOS / Git Bash)
 #
 # Reads allowlist.yml, copies only allowlisted files into PUBLIC_DIR,
 # runs token substitution, scans for secrets and scrub-list hits,
@@ -22,7 +22,7 @@
 #
 # EXIT CODES
 #   0  success (or dry-run completed)
-#   1  scan found a secret / scrub hit — publish aborted
+#   1  scan found a secret / scrub hit, publish aborted
 #   2  allowlist not found
 #   3  missing dependency
 
@@ -101,7 +101,7 @@ from pathlib import Path
 allowlist_path = sys.argv[1]
 tmp = sys.argv[2]
 
-# Minimal YAML parser — only handles our known structure (no PyYAML required)
+# Minimal YAML parser, only handles our known structure (no PyYAML required)
 def parse_allowlist(path):
     text = Path(path).read_text(encoding="utf-8")
     lines = text.splitlines()
@@ -230,7 +230,7 @@ mapfile -t ALLOWED_FILES < "$ALLOWED_FILES_LIST"
 echo "  ${#ALLOWED_FILES[@]} files queued."
 
 # ---------------------------------------------------------------------------
-# Step 2 — Secret + scrub scan
+# Step 2, Secret + scrub scan
 # ---------------------------------------------------------------------------
 echo ""
 echo "[step 2] Running security + identity scan..."
@@ -268,14 +268,14 @@ for rel_path in "${ALLOWED_FILES[@]}"; do
   # Secret regex scan
   for pattern in "${SECRET_PATTERNS[@]}"; do
     if grep -qiPo "$pattern" "$full_path" 2>/dev/null; then
-      echo "  [SECRET] $rel_path — matched pattern: $pattern" >> "$SCAN_REPORT"
+      echo "  [SECRET] $rel_path, matched pattern: $pattern" >> "$SCAN_REPORT"
       SCAN_FAIL=true
     fi
   done
 
   # Hidden unicode scan
   if grep -qP "$HIDDEN_UNICODE_PATTERN" "$full_path" 2>/dev/null; then
-    echo "  [UNICODE] $rel_path — hidden unicode chars detected" >> "$SCAN_REPORT"
+    echo "  [UNICODE] $rel_path, hidden unicode chars detected" >> "$SCAN_REPORT"
     SCAN_FAIL=true
   fi
 done
@@ -296,7 +296,7 @@ PLACEHOLDERS = {"YOUR_REAL_NAME", "YOUR_REAL_EMAIL", ""}
 tokens = [t for t in tokens_raw if t not in PLACEHOLDERS and len(t) > 2]
 
 if not tokens:
-    print("[scrub] No real tokens to scan (owner fields not filled in — check allowlist.yml)")
+    print("[scrub] No real tokens to scan (owner fields not filled in, check allowlist.yml)")
     sys.exit(0)
 
 hits = []
@@ -313,15 +313,15 @@ for rel in file_list:
         continue
     for token in tokens:
         if token.lower() in text.lower():
-            hits.append(f"  [SCRUB]   {rel} — contains scrub token: {token!r}")
+            hits.append(f"  [SCRUB]   {rel}, contains scrub token: {token!r}")
 
 if hits:
     with open(report_path, "a", encoding="utf-8") as f:
         f.write("\n".join(hits) + "\n")
-    print(f"[scrub] {len(hits)} scrub token hit(s) found — see report")
+    print(f"[scrub] {len(hits)} scrub token hit(s) found, see report")
     sys.exit(1)
 else:
-    print(f"[scrub] Clean — {len(tokens)} token(s) checked against {len(file_list)} files")
+    print(f"[scrub] Clean, {len(tokens)} token(s) checked against {len(file_list)} files")
 PYEOF
 SCRUB_EXIT=$?
 if [[ $SCRUB_EXIT -ne 0 ]]; then
@@ -344,7 +344,7 @@ fi
 echo "  Scan clean."
 
 # ---------------------------------------------------------------------------
-# Step 3 — Token substitution
+# Step 3, Token substitution
 # ---------------------------------------------------------------------------
 echo ""
 echo "[step 3] Token substitution (placeholder → template values)..."
@@ -362,7 +362,7 @@ declare -A TOKEN_MAP=(
 echo "  No concrete substitutions needed (source uses placeholder tokens already)."
 
 # ---------------------------------------------------------------------------
-# Step 4 — Review summary
+# Step 4, Review summary
 # ---------------------------------------------------------------------------
 echo ""
 echo "================================================================"
@@ -384,7 +384,7 @@ if [[ "$DRY_RUN" == "true" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Step 5 — Copy (only if --confirm passed)
+# Step 5, Copy (only if --confirm passed)
 # ---------------------------------------------------------------------------
 if [[ "$CONFIRM" != "true" ]]; then
   echo "  This is a preview. To actually copy files, rerun with --confirm."
@@ -417,7 +417,7 @@ done
 echo "  Copied: $COPIED | Skipped (missing): $SKIPPED"
 
 # ---------------------------------------------------------------------------
-# Step 6 — Git push (optional, requires --push)
+# Step 6, Git push (optional, requires --push)
 # ---------------------------------------------------------------------------
 if [[ "$PUSH" == "true" ]]; then
   echo ""

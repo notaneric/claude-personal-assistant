@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-action_gate.py — PreToolUse hook for Claude Code
+action_gate.py, PreToolUse hook for Claude Code
 ==================================================
 Blocks risky tool calls before they execute.
 
@@ -21,7 +21,7 @@ How it works:
     { "tool_name": "...", "tool_input": { ... } }
   Exit 0  → allow the call.
   Exit 2  → BLOCK the call; stderr is returned to Claude as feedback.
-  Exit 1  → hard error (treated as allow by Claude Code — use sparingly).
+  Exit 1  → hard error (treated as allow by Claude Code, use sparingly).
 
 Customize the PROTECTED_PATHS and BLOCKED_PATTERNS lists below.
 """
@@ -32,7 +32,7 @@ import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# CONFIGURATION — edit these to match your environment
+# CONFIGURATION, edit these to match your environment
 # ---------------------------------------------------------------------------
 
 # Paths that must never be written or deleted.
@@ -46,7 +46,7 @@ PROTECTED_PATHS: list[str] = [
     # "/etc/",
 ]
 
-# Protected branch names — force-pushes to these are blocked.
+# Protected branch names, force-pushes to these are blocked.
 PROTECTED_BRANCHES: list[str] = ["main", "master", "production", "release"]
 
 # Shell patterns that are blocked regardless of context.
@@ -71,7 +71,7 @@ BLOCKED_SHELL_PATTERNS: list[str] = [
 ]
 
 # ---------------------------------------------------------------------------
-# GATE LOGIC — you should not need to edit below this line
+# GATE LOGIC, you should not need to edit below this line
 # ---------------------------------------------------------------------------
 
 
@@ -148,13 +148,13 @@ TOOL_CHECKERS = {
 def main() -> None:
     raw = sys.stdin.read().strip()
     if not raw:
-        # No input — allow (Claude Code should always send JSON, but be safe).
+        # No input, allow (Claude Code should always send JSON, but be safe).
         sys.exit(0)
 
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError as exc:
-        # Malformed input — allow and log; don't block valid work on a parse bug.
+        # Malformed input, allow and log; don't block valid work on a parse bug.
         print(f"[action_gate] WARNING: could not parse stdin JSON: {exc}", file=sys.stderr)
         sys.exit(0)
 
@@ -165,7 +165,7 @@ def main() -> None:
     if checker:
         checker(tool_input)
 
-    # All checks passed — allow the call.
+    # All checks passed, allow the call.
     sys.exit(0)
 
 

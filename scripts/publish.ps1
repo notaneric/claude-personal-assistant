@@ -1,4 +1,4 @@
-# publish.ps1 — living-mirror publish pipeline (Windows PowerShell 5.1 / 7+)
+# publish.ps1, living-mirror publish pipeline (Windows PowerShell 5.1 / 7+)
 #
 # Reads allowlist.yml, copies only allowlisted files into $OutputDir,
 # runs token substitution, scans for secrets and scrub-list hits,
@@ -221,7 +221,7 @@ $AllowedFiles = Get-Content $fileListTxt | Where-Object { $_ -match '\S' }
 Write-Host "  $($AllowedFiles.Count) files queued."
 
 # ---------------------------------------------------------------------------
-# Step 2 — Secret + scrub scan
+# Step 2, Secret + scrub scan
 # ---------------------------------------------------------------------------
 Write-Host ""
 Write-Host "[step 2] Running security + identity scan..."
@@ -276,20 +276,20 @@ for rel in file_list:
 
     # Hidden unicode
     if HIDDEN_UNICODE.search(text):
-        hits.append(f"  [UNICODE] {rel} — hidden unicode characters")
+        hits.append(f"  [UNICODE] {rel}, hidden unicode characters")
 
     # Secret patterns
     for pattern, label in SECRET_PATTERNS:
         if re.search(pattern, text, re.IGNORECASE):
             # Allow placeholder tokens to contain the word "email" etc.
             # Only flag if it looks like a real value
-            hits.append(f"  [SECRET]  {rel} — {label}")
+            hits.append(f"  [SECRET]  {rel}, {label}")
             break
 
     # Scrub tokens
     for token in scrub_tokens:
         if token.lower() in text.lower():
-            hits.append(f"  [SCRUB]   {rel} — contains: {token!r}")
+            hits.append(f"  [SCRUB]   {rel}, contains: {token!r}")
 
 report_p.write_text("\n".join(hits) + "\n" if hits else "", encoding="utf-8")
 if hits:
@@ -297,7 +297,7 @@ if hits:
         print(h)
     sys.exit(1)
 else:
-    print(f"  Scan clean — {len(file_list)} files checked, {len(scrub_tokens)} scrub tokens")
+    print(f"  Scan clean, {len(file_list)} files checked, {len(scrub_tokens)} scrub tokens")
 '@
 
 $scanPy    = Join-Path $TmpDir "scan.py"
@@ -315,14 +315,14 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "  Scan clean."
 
 # ---------------------------------------------------------------------------
-# Step 3 — Token substitution
+# Step 3, Token substitution
 # ---------------------------------------------------------------------------
 Write-Host ""
 Write-Host "[step 3] Token substitution..."
-Write-Host "  Source uses placeholder tokens (YOUR_NAME, YOUR_HANDLE, etc.) — passing through as-is."
+Write-Host "  Source uses placeholder tokens (YOUR_NAME, YOUR_HANDLE, etc.), passing through as-is."
 
 # ---------------------------------------------------------------------------
-# Step 4 — Review summary
+# Step 4, Review summary
 # ---------------------------------------------------------------------------
 Write-Host ""
 Write-Host "================================================================"
@@ -345,7 +345,7 @@ if ($DryRun) {
 }
 
 # ---------------------------------------------------------------------------
-# Step 5 — Copy (only if -Confirm passed)
+# Step 5, Copy (only if -Confirm passed)
 # ---------------------------------------------------------------------------
 if (-not $Confirm) {
     Write-Host "  This is a preview. To actually copy files, rerun with -Confirm."
@@ -380,7 +380,7 @@ foreach ($rel in $AllowedFiles) {
 Write-Host "  Copied: $Copied | Skipped (missing): $Skipped"
 
 # ---------------------------------------------------------------------------
-# Step 6 — Git push (optional)
+# Step 6, Git push (optional)
 # ---------------------------------------------------------------------------
 if ($Push) {
     Write-Host ""

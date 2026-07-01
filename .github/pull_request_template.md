@@ -18,7 +18,7 @@
 
 ### Content safety
 - [ ] No personal data in any file (real names, emails, API keys, financial data, private paths)
-- [ ] No third-party skills vendored directly — external skills are referenced by link
+- [ ] No third-party skills vendored directly, external skills are referenced by link
 - [ ] Injection-safety preamble present in any new AGENTS.md section or SKILL.md
 
 ### Skill files (if applicable)

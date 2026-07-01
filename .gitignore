@@ -6,7 +6,7 @@
 secrets/
 credentials/
 
-# Your real publish allowlist (holds your name/email/client scrub tokens) — never commit.
+# Your real publish allowlist (holds your name/email/client scrub tokens), never commit.
 # Only allowlist.example.yml (placeholders) ships.
 scripts/allowlist.yml
 allowlist.yml
@@ -14,7 +14,7 @@ allowlist.yml
 # Local config overrides (never commit real config)
 .claude/settings.json
 .claude/settings.local.json
-# Keep the example — only ignore the real one
+# Keep the example, only ignore the real one
 !.claude/settings.example.json
 
 # Skill bank with real scores (only the template ships)

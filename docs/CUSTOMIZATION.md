@@ -26,7 +26,7 @@ Minimum frontmatter:
 ```yaml
 ---
 name: my-skill
-description: One sentence — what this skill does and when to activate it.
+description: One sentence, what this skill does and when to activate it.
 allowed-tools:
   - Read
   - Grep
@@ -59,7 +59,7 @@ This is enforced by CI.
 
 ## Modifying the skill activation matrix
 
-The matrix in `CLAUDE.md` under "Skill Activation Matrix" maps context triggers to skills. Add rows freely. Routing is semantic — the model matches on meaning, not exact keywords.
+The matrix in `CLAUDE.md` under "Skill Activation Matrix" maps context triggers to skills. Add rows freely. Routing is semantic, the model matches on meaning, not exact keywords.
 
 When referencing an external skill not shipped in this repo, link to its upstream source rather than vendoring it:
 
@@ -76,18 +76,18 @@ Key parameters in `sdar/skill_bank.json`:
 | Field | Default | Effect |
 |---|---|---|
 | `avg_reward` | 0.5 | Starting signal strength for a skill |
-| `uses` | 0 | Use count — drives UCB exploration bonus |
+| `uses` | 0 | Use count, drives UCB exploration bonus |
 | `ucb_score` | computed | `avg_reward + 0.5 * sqrt(ln(N+1)/(uses+1))` |
 | `domains` | `[]` | Which task domains this skill applies to |
 
 To bias toward a skill from day one (you know it's good): set `avg_reward` to 0.7-0.8.
-To force exploration of an unused skill: lower `avg_reward` temporarily — the UCB bonus will surface it.
+To force exploration of an unused skill: lower `avg_reward` temporarily, the UCB bonus will surface it.
 
 Run `/reflect` periodically to get an automated audit of which skills are underperforming and should be tuned or removed.
 
 ## Configuring hooks
 
-Hooks in `.claude/settings.json` fire deterministically — they always run regardless of what the model decides. Use them for gates that must hold.
+Hooks in `.claude/settings.json` fire deterministically, they always run regardless of what the model decides. Use them for gates that must hold.
 
 The example config at `.claude/settings.example.json` shows the main hook events:
 
@@ -97,7 +97,7 @@ The example config at `.claude/settings.example.json` shows the main hook events
 | `postToolUse` | Run formatters, linters, or compliance logging after every file edit |
 | `stop` | Auto-trigger `/learn`, write to skill bank, send session summary |
 
-To add a gate on any irreversible action (file deletion, API calls, spending money), use `preToolUse` with exit code 2. This is the only reliable enforcement mechanism — CLAUDE.md text is not a gate.
+To add a gate on any irreversible action (file deletion, API calls, spending money), use `preToolUse` with exit code 2. This is the only reliable enforcement mechanism, CLAUDE.md text is not a gate.
 
 ## Adjusting model routing
 
@@ -122,4 +122,4 @@ When you pull updates from upstream:
 1. Run `scripts/publish.sh --check` to diff what changed.
 2. Apply updates to rules and commands manually if you have local overrides.
 3. Re-run the injection-safety check: `bash scripts/check-injection.sh`.
-4. The skill bank (`sdar/skill_bank.json`) is gitignored — it will never be overwritten by upstream.
+4. The skill bank (`sdar/skill_bank.json`) is gitignored, it will never be overwritten by upstream.

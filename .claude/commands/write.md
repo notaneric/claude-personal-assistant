@@ -1,6 +1,6 @@
-# /write [topic or brief] — Humanized Content Pipeline
+# /write [topic or brief]: Humanized Content Pipeline
 
-Produce written content that sounds like a real person wrote it — not an AI. Apply the humanizer + marketing-skills pipeline.
+Produce written content that sounds like a real person wrote it, not an AI. Apply the humanizer + marketing-skills pipeline.
 
 ## Skills Activated
 Primary: humanizer  
@@ -47,8 +47,8 @@ Support: theme-factory (brand voice consistency)
    - Optional: social media excerpt version
 
 ## Content Type Shortcuts
-- `/write blog [topic]` — blog post (600-1200 words)
-- `/write email [goal]` — cold/warm email, subject line included
-- `/write landing [product]` — landing page copy (hero + features + CTA)
-- `/write thread [topic]` — Twitter/X thread (10-15 tweets)
-- `/write docs [feature]` — technical documentation, developer-friendly
+- `/write blog [topic]`, blog post (600-1200 words)
+- `/write email [goal]`, cold/warm email, subject line included
+- `/write landing [product]`, landing page copy (hero + features + CTA)
+- `/write thread [topic]`, Twitter/X thread (10-15 tweets)
+- `/write docs [feature]`, technical documentation, developer-friendly

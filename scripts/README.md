@@ -1,6 +1,6 @@
 # Sync Pipeline
 
-The `scripts/` directory contains the living-mirror publish pipeline. Its job: copy only explicitly-allowed files from your private source repo into a clean public output directory — after scanning for secrets, identity tokens, and hidden unicode — and refuse to proceed unless the scan is clean.
+The `scripts/` directory contains the living-mirror publish pipeline. Its job: copy only explicitly-allowed files from your private source repo into a clean public output directory, after scanning for secrets, identity tokens, and hidden unicode, and refuse to proceed unless the scan is clean.
 
 Default-deny. Opt-in per file. Manual confirm before any push.
 
@@ -46,7 +46,7 @@ cp scripts/allowlist.example.yml scripts/allowlist.yml
 ```
 
 Edit `allowlist.yml`:
-- Fill in `owner.name` and `owner.email` with your real name/email. These become scrub tokens — if they appear anywhere in a file queued for publish, the pipeline aborts.
+- Fill in `owner.name` and `owner.email` with your real name/email. These become scrub tokens, if they appear anywhere in a file queued for publish, the pipeline aborts.
 - Add any client or company names to `scrub_tokens`.
 - Set `publish: true` for each file you want in the public output. Everything else defaults to `false`.
 
@@ -98,12 +98,12 @@ The push step runs `git add -A && git commit && git push` inside the output dire
 - Email addresses (any `foo@domain.tld` pattern)
 
 **Hidden unicode:**
-- Zero-width spaces, joiners, non-joiners, BOM, bidi override characters — common prompt-injection vectors
+- Zero-width spaces, joiners, non-joiners, BOM, bidi override characters, common prompt-injection vectors
 
 **Scrub tokens:**
 - Your real name and email (from `owner` block in allowlist.yml)
 - Any strings listed under `scrub_tokens` (client names, company names, etc.)
-- Case-insensitive substring match — partial matches count
+- Case-insensitive substring match, partial matches count
 
 Any hit aborts the pipeline with a report. No files are copied.
 
@@ -126,7 +126,7 @@ scrub_tokens:
 files:
   - path: "README.md"
     publish: true
-  - path: ".private/**"    # private working memory, logs, pending specs — never public
+  - path: ".private/**"    # private working memory, logs, pending specs, never public
     publish: false
 ```
 
@@ -157,7 +157,7 @@ Then the push step commits and pushes from that directory.
 
 | Tool | Required | Notes |
 |---|---|---|
-| `python3` | yes | Handles YAML parsing and scanning. No third-party packages needed — stdlib only. |
+| `python3` | yes | Handles YAML parsing and scanning. No third-party packages needed, stdlib only. |
 | `git` | yes (for push) | Only needed for the push step. |
 | `bash 4+` | POSIX only | `publish.sh` uses `mapfile`; requires bash not sh. |
 | `PowerShell 5.1+` | Windows only | `publish.ps1` works on both Windows PowerShell and PS7. |
@@ -181,7 +181,7 @@ jobs:
       - name: Publish
         run: |
           cp scripts/allowlist.example.yml scripts/allowlist.yml
-          # In CI, owner tokens are placeholders — no real name to scrub
+          # In CI, owner tokens are placeholders, no real name to scrub
           ./scripts/publish.sh --confirm --output /tmp/public-output
       - name: Push to public repo
         uses: cpina/github-action-push-to-another-repository@v1.7.2
@@ -202,5 +202,5 @@ In CI, use the example allowlist (which has placeholder owner fields) so the scr
 
 - `allowlist.yml` is git-ignored. Never commit it with real personal data.
 - The scan catches the most common secret patterns but is not a substitute for a dedicated secrets scanner like `gitleaks` or `truffleHog` on your private repo's history. Use those tools separately.
-- The pipeline blocks on first scan hit — it does not attempt to auto-redact or strip secrets. You fix, you re-run.
+- The pipeline blocks on first scan hit, it does not attempt to auto-redact or strip secrets. You fix, you re-run.
 - Treat the output directory as public from the moment files land there. Do not write anything to it manually that you haven't run through the pipeline.

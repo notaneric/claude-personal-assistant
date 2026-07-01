@@ -1,4 +1,4 @@
-# /status — Current State Dashboard
+# /status: Current State Dashboard
 
 Print Eric's complete current state: skill bank, knowledge vault, installed plugins, session history.
 
@@ -6,7 +6,7 @@ Print Eric's complete current state: skill bank, knowledge vault, installed plug
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-E R I C  —  Your Personal AI Assistant
+E R I C ,  Your Personal AI Assistant
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SESSION HISTORY
@@ -31,7 +31,7 @@ SKILL DOMAINS
 KNOWLEDGE VAULT
   Location:        your-knowledge-vault/
   Files:           [count] markdown  |  [count] PDFs  |  [count] media
-  Last graphified: [date or "never — run /graphify"]
+  Last graphified: [date or "never, run /graphify"]
   Knowledge graph: [node count] nodes  |  [edge count] edges
 
 SLASH COMMANDS AVAILABLE
@@ -41,7 +41,7 @@ SLASH COMMANDS AVAILABLE
 
 SELF-IMPROVEMENT CYCLE
   Algorithm:  SDAR (sigmoid gate + UCB retrieval)
-  Gate:       g = σ(5·Δ) — asymmetric trust
+  Gate:       g = σ(5·Δ), asymmetric trust
   Formula:    UCB = avg_reward + 0.5·sqrt(ln(N+1)/(uses+1))
   Status:     [active / needs /learn to prime]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

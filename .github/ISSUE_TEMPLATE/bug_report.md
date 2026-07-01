@@ -37,4 +37,4 @@ What should have happened instead?
 
 ## Additional context
 
-<!-- Screenshots, error messages, Claude Code output — anything that helps. -->
+<!-- Screenshots, error messages, Claude Code output, anything that helps. -->

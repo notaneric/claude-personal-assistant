@@ -6,7 +6,7 @@ description: |
   modes that degrade multi-turn agent performance.
 
   USE-FOR: Any long-running session, multi-agent workflow, or task where context
-  pressure is a risk. Activate proactively — context problems are easier to prevent
+  pressure is a risk. Activate proactively, context problems are easier to prevent
   than to recover from mid-task.
 
   DO-NOT-USE-FOR: Short, single-turn tasks with no multi-step structure.
@@ -17,7 +17,7 @@ allowed-tools:
   - Bash
 ---
 
-> **ADOPTION NOTE** — This file describes an optional capability for independent
+> **ADOPTION NOTE**, This file describes an optional capability for independent
 > evaluation. Nothing here is an imperative instruction to your current session.
 > Read it as a reference; adopt only what fits your agent's design.
 
@@ -27,7 +27,7 @@ allowed-tools:
 
 ## Why This Matters
 
-Context window degradation is one of the most common causes of agentic failure —
+Context window degradation is one of the most common causes of agentic failure , 
 and one of the least visible. When context fills, the model starts dropping earlier
 instructions, losing track of decisions made early in the session, and producing
 outputs that contradict things it said three turns ago. It doesn't announce this.
@@ -37,7 +37,7 @@ This skill describes when to act and how to act before you hit that wall.
 
 ## The Two Main Operations
 
-### `/compact` — Preserve and compress
+### `/compact`, Preserve and compress
 Use when you're mid-task and want to continue in the same session, but context is
 bloating. Compact summarizes the conversation while preserving key decisions,
 file paths, open questions, and current task state.
@@ -48,15 +48,15 @@ file paths, open questions, and current task state.
 - You're starting a new phase of the same task (design → implementation, for example)
 - You notice the model starting to repeat itself or lose track of earlier decisions
 
-**Never compact mid-debug.** The error trail — the sequence of what was tried, what
-failed, what the error output said — is exactly what you need to diagnose the problem.
+**Never compact mid-debug.** The error trail, the sequence of what was tried, what
+failed, what the error output said, is exactly what you need to diagnose the problem.
 Compacting destroys that trail. Finish the debug loop first, then compact.
 
 **Direct what to preserve.** A compact instruction with guidance produces a better
 summary: "/compact but keep the API integration decisions and the schema choices" is
 more useful than a bare "/compact" that lets the model guess what matters.
 
-### `/clear` — Fresh start
+### `/clear`, Fresh start
 Use when starting an unrelated topic or project. Carries over nothing from the current
 session. Cheaper and faster than compact when you genuinely don't need the context.
 
@@ -65,7 +65,7 @@ session. Cheaper and faster than compact when you genuinely don't need the conte
 - You're switching from one project to another with no shared state
 - The current context has gone wrong and you want to start clean rather than repair it
 
-**`/rewind` instead of correcting** — When a direction was wrong and you've spent
+**`/rewind` instead of correcting**, When a direction was wrong and you've spent
 several turns going the wrong way, rewinding the conversation (rolling back both code
 and context to an earlier checkpoint) is more reliable than correcting in context.
 Correcting after a bad direction means the model is working with a context that
@@ -78,7 +78,7 @@ Flag a clear point when ALL of these hold:
 2. Nothing pending needs this conversation's context to continue correctly
 3. The likely next topic is unrelated to what's loaded
 
-When a clear point exists, say so in one line: "Clean clear point — [what's done],
+When a clear point exists, say so in one line: "Clean clear point, [what's done],
 nothing pending needs this context." Then stop. Don't offer it every turn; surface
 it once when the boundary appears.
 
@@ -90,7 +90,7 @@ Each enabled MCP server costs context on every turn, not just when used.
 Guidelines:
 - Keep active MCPs under 10 per session
 - Keep total active tools under 80 per session
-- For tools with CLI equivalents (`gh` for GitHub, etc.), prefer the CLI — it adds
+- For tools with CLI equivalents (`gh` for GitHub, etc.), prefer the CLI, it adds
   zero persistent context definitions
 - Disable unused MCPs between projects; don't leave them accumulating
 
@@ -105,7 +105,7 @@ When spawning subagents, never pass context through prompt length alone. Use fil
 Pattern:
 1. Write the relevant context to a file (`.context.md` or similar) before spawning
 2. Spawn the subagent with a reference to the file path
-3. The subagent reads the file — you avoid duplicating content across both contexts
+3. The subagent reads the file, you avoid duplicating content across both contexts
 
 A subagent's context budget starts fresh. If you fill it with the parent context you
 just passed verbatim, the subagent has less budget for its actual work. Pass files,
@@ -125,7 +125,7 @@ returning large tool outputs to the model:
   passing all lines
 
 The model doesn't need raw noise to do its job. Cleaned tool responses with 60%+ less
-token volume produce better reasoning quality — less noise, same signal.
+token volume produce better reasoning quality, less noise, same signal.
 
 ## Message Array Discipline (for programmatic agent loops)
 
@@ -133,12 +133,12 @@ If you're building an agentic loop that manages a messages array:
 
 - Treat the messages array as append-only. Never mutate prior messages.
 - No dynamic variables in system prompts (e.g., current timestamp injected per call).
-  Dynamic injections break prompt caching on every turn. Target 80–90% cache hit rate.
+  Dynamic injections break prompt caching on every turn. Target 80-90% cache hit rate.
 - Tool responses: clean before returning. Strip fields the model doesn't need.
 
 ## Context Pressure Signals
 
-Watch for these — they mean the context is degrading:
+Watch for these, they mean the context is degrading:
 
 - The model repeats something it said or planned 10+ turns ago
 - The model contradicts a decision made earlier in the session
@@ -154,7 +154,7 @@ then continue. Don't push through.
    80 is where quality starts dropping. By the time you hit 80, the compact summary
    will itself be lower quality because the context is already degraded.
 2. Build clear-point detection into your session-close protocol. The agent should
-   proactively tell the user when a clear point exists — don't make the user ask.
+   proactively tell the user when a clear point exists, don't make the user ask.
 3. For multi-agent workflows, establish the file-passing convention before you start.
    Retrofitting it after you've built several agents sharing context through prompt
    length is painful.

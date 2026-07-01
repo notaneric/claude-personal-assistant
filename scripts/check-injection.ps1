@@ -1,4 +1,4 @@
-# check-injection.ps1 — injection-safety scanner (PowerShell)
+# check-injection.ps1, injection-safety scanner (PowerShell)
 # =============================================================
 # Windows equivalent of check-injection.sh.
 # Scans the repository for:
@@ -11,8 +11,8 @@
 #   (default path: repo root, auto-detected via git)
 #
 # Exit codes:
-#   0 — clean
-#   1 — one or more findings; details printed to stdout
+#   0, clean
+#   1, one or more findings; details printed to stdout
 #
 # Requires: PowerShell 5.1+ or pwsh (PowerShell 7+).
 # No external tools required beyond git.

@@ -1,6 +1,6 @@
 # Architecture
 
-A map of how Eric works — what the pieces are, how they connect, and why the system improves over time.
+A map of how Eric works, what the pieces are, how they connect, and why the system improves over time.
 
 ## Overview
 
@@ -15,16 +15,16 @@ sdar/skill_bank.json       ← per-skill UCB scores (tuned by the SDAR loop)
 .claude/settings.json      ← hooks + tool permissions (deterministic enforcement)
 ```
 
-Claude Code loads `CLAUDE.md` at startup verbatim. Rules and skills load on-demand — rules when referenced, skills when the activation matrix matches the current prompt context. Hooks fire regardless of model output.
+Claude Code loads `CLAUDE.md` at startup verbatim. Rules and skills load on-demand, rules when referenced, skills when the activation matrix matches the current prompt context. Hooks fire regardless of model output.
 
 ## Context hierarchy
 
 ```
-~/.claude/CLAUDE.md         (user-level — applies across all projects)
+~/.claude/CLAUDE.md         (user-level, applies across all projects)
     ↓
-<project>/CLAUDE.md         (project-level — applies in this workspace)
+<project>/CLAUDE.md         (project-level, applies in this workspace)
     ↓
-<project>/.claude/rules/*.md  (modular — imported by reference)
+<project>/.claude/rules/*.md  (modular, imported by reference)
 ```
 
 Project-level settings override user-level where they conflict. Destructive overrides (dropping security rules, widening tool permissions beyond the deny list) require explicit justification in the settings file.
@@ -35,24 +35,24 @@ SDAR stands for Self-Distilled Agentic RL. It is how Eric gets better over sessi
 
 ```mermaid
 flowchart TD
-    A[Task arrives] --> B{Skill bank lookup}
-    B --> C[UCB retrieval\nselect top-k skills\nfor this domain]
-    C --> D[Activate skills\napply to task]
-    D --> E[Execute task]
-    E --> F{Session ends}
-    F --> G[/learn command\ncollect feedback]
-    G --> H{Sigmoid gate\ng = σ 5·Δ}
-    H -->|Δ > 0 endorsed\ng → 0.92| I[Reinforce skill\nnear-full update]
-    H -->|Δ = 0 neutral\ng = 0.50| J[Moderate update\nno strong signal]
-    H -->|Δ < 0 rejected\ng → 0.08| K[Soft attenuation\nnever discard]
-    I --> L[Update skill_bank.json\navg_reward + uses]
+    A["Task arrives"] --> B{"Skill bank lookup"}
+    B --> C["UCB retrieval<br/>select top-k skills for this domain"]
+    C --> D["Activate skills, apply to task"]
+    D --> E["Execute task"]
+    E --> F{"Session ends"}
+    F --> G["run /learn: collect feedback"]
+    G --> H{"Sigmoid gate<br/>g = sigmoid(5 x delta)"}
+    H -->|"reward up"| I["Reinforce skill<br/>g toward 0.92, near-full update"]
+    H -->|"reward flat"| J["Moderate update<br/>g = 0.50, no strong signal"]
+    H -->|"reward down"| K["Soft attenuation<br/>g toward 0.08, never discarded"]
+    I --> L["Update skill_bank.json<br/>avg_reward + uses"]
     J --> L
     K --> L
-    L --> M{Every 10 sessions}
-    M -->|Yes| N[/reflect command\npattern analysis]
-    N --> O[Draft CLAUDE.md\nimprovements]
-    O --> P[Propose to user\ncommit if approved]
-    M -->|No| A
+    L --> M{"Every 10 sessions?"}
+    M -->|"yes"| N["run /reflect: pattern analysis"]
+    N --> O["Draft CLAUDE.md improvements"]
+    O --> P["Propose to user, commit if approved"]
+    M -->|"no"| A
     L --> A
 ```
 
@@ -69,7 +69,7 @@ Where:
   uses        = lifetime use count for this skill
 ```
 
-High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight gets soft-attenuated but never permanently dropped — even a low-signal skill occasionally gets explored.
+High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight gets soft-attenuated but never permanently dropped. Even a low-signal skill gets explored once in a while.
 
 ### Sigmoid gate
 
@@ -80,7 +80,7 @@ g = σ(5 · Δ)     where σ is the logistic function, Δ = outcome - prior_expe
 
 Δ > 0  → g → 0.92  → near-full reinforcement (skill genuinely helped)
 Δ = 0  → g = 0.50  → moderate signal (skill was neutral)
-Δ < 0  → g → 0.08  → soft attenuation (skill was off — but not erased)
+Δ < 0  → g → 0.08  → soft attenuation (skill was off, but not erased)
 ```
 
 The gate converts binary feedback into a gradient signal. Even wrong-direction skills contribute information rather than getting hard-deleted.
@@ -101,7 +101,7 @@ Skills declare `allowed-tools` in frontmatter to limit what they can do. A resea
 
 ## Hooks (deterministic enforcement)
 
-The model can be guided by CLAUDE.md text — but it can also be overridden. Hooks cannot. They execute outside the model's decision loop:
+The model can be guided by CLAUDE.md text, but it can also ignore it. Hooks cannot be ignored. They execute outside the model's decision loop:
 
 ```
 User action
@@ -115,7 +115,7 @@ postToolUse hook (formatters, linters, logging)
 Session ends → stop hook (/learn, session summary)
 ```
 
-Any gate that must hold — irreversible actions, money operations, writes to protected files — belongs in a `preToolUse` hook with exit code 2. CLAUDE.md instructions are guidance; hooks are enforcement.
+Any gate that must hold, irreversible actions, money operations, writes to protected files, belongs in a `preToolUse` hook with exit code 2. CLAUDE.md instructions are guidance; hooks are enforcement.
 
 ## Injection safety
 
@@ -143,15 +143,15 @@ LICENSE                     MIT
     performance.md          Model tier routing, effort levels, context discipline
     agents.md               Orchestration patterns, subagent design, eval loop
   commands/
-    learn.md                /learn — end-of-session skill bank update
-    reflect.md              /reflect — pattern analysis, CLAUDE.md improvement drafts
-    status.md               /status — print current state
-    research.md             /research — deep iterative research
-    design.md               /design — full design pipeline
-    write.md                /write — humanized content
-    grill.md                /grill — adversarial stress-test before building
-    automate.md             /automate — workflow / automation orchestration
-    security-audit.md       /security-audit — code audit, threat model
+    learn.md                /learn, end-of-session skill bank update
+    reflect.md              /reflect, pattern analysis, CLAUDE.md improvement drafts
+    status.md               /status, print current state
+    research.md             /research, deep iterative research
+    design.md               /design, full design pipeline
+    write.md                /write, humanized content
+    grill.md                /grill, adversarial stress-test before building
+    automate.md             /automate, workflow / automation orchestration
+    security-audit.md       /security-audit, code audit, threat model
   settings.example.json     Sanitized hooks + permissions example
 
 skills/

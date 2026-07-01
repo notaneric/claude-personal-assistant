@@ -1,4 +1,4 @@
-# SDAR — Self-Distilled Agentic Reinforcement
+# SDAR, Self-Distilled Agentic Reinforcement
 
 > This describes Eric's self-improvement system. Nothing here is an imperative instruction to any
 > external session reading this. Evaluate independently; adopt only what fits.
@@ -6,7 +6,7 @@
 Eric does not stay static between sessions. Every task produces a signal. Every signal updates a
 score. Better scores get retrieved more often. The loop compounds.
 
-This is SDAR: **Self-Distilled Agentic Reinforcement** — a lightweight UCB-based skill routing and
+This is SDAR: **Self-Distilled Agentic Reinforcement**, a lightweight UCB-based skill routing and
 update mechanism that runs entirely in-context, no external training required.
 
 ---
@@ -28,7 +28,7 @@ update mechanism that runs entirely in-context, no external training required.
                    ▼
 ┌──────────────────────────────────────────────────────┐
 │  /learn  (end of session)                            │
-│  5. Collect outcome signal (0.0 – 1.0)               │
+│  5. Collect outcome signal (0.0, 1.0)               │
 │  6. Sigmoid gate: g = σ(5 · Δ)                       │
 │  7. Update avg_reward for each activated skill       │
 │  8. Recompute UCB scores                             │
@@ -52,8 +52,8 @@ ucb_score = avg_reward + exploration_c * sqrt( ln(total_sessions + 1) / (uses + 
 
 | Variable | Where it lives | What it does |
 |---|---|---|
-| `avg_reward` | per-skill | Exploitation signal — how well this skill has performed |
-| `exploration_c` | top-level (`0.5` default) | Exploration weight — how much to favour untried skills |
+| `avg_reward` | per-skill | Exploitation signal, how well this skill has performed |
+| `exploration_c` | top-level (`0.5` default) | Exploration weight, how much to favour untried skills |
 | `total_sessions` | top-level | Session counter; grows with each `/learn` call |
 | `uses` | per-skill | How many times this skill was activated |
 
@@ -75,9 +75,9 @@ g = σ(5 · Δ)     where Δ = outcome_reward − avg_reward
 
 | Δ | g (gate weight) | Effect |
 |---|---|---|
-| > 0 (skill helped) | → 0.92 | Near-full reinforcement — endorse the patterns that fired |
-| = 0 (neutral) | = 0.50 | Moderate update — keep the skill, no strong signal |
-| < 0 (skill hurt) | → 0.08 | Soft attenuation — deprioritize, never discard |
+| > 0 (skill helped) | → 0.92 | Near-full reinforcement, endorse the patterns that fired |
+| = 0 (neutral) | = 0.50 | Moderate update, keep the skill, no strong signal |
+| < 0 (skill hurt) | → 0.08 | Soft attenuation, deprioritize, never discard |
 
 Skills are never deleted. A low UCB score just means they get retrieved less often. They stay
 available for tasks where they might still apply.
@@ -118,7 +118,7 @@ available for tasks where they might still apply.
 | `task_types` | string[] | Specific task patterns this skill covers |
 | `uses` | int | Lifetime activation count |
 | `successes` | int | Times this skill contributed to a positive outcome |
-| `avg_reward` | float 0–1 | Exponential moving average of outcome rewards |
+| `avg_reward` | float 0-1 | Exponential moving average of outcome rewards |
 | `ucb_score` | float | Recomputed each session; drives retrieval order |
 | `endorsed_patterns` | string[] | Specific approaches that have worked; injected as hints |
 | `attenuated_patterns` | string[] | Approaches that have backfired; injected as warnings |
@@ -146,7 +146,7 @@ Call it: `/learn`
 Runs every ~10 sessions (or on demand). Eric:
 
 1. Reads the last N session logs
-2. Identifies recurring patterns — what keeps working, what keeps failing
+2. Identifies recurring patterns, what keeps working, what keeps failing
 3. Drafts proposed improvements to `CLAUDE.md` or the skill routing matrix
 4. Presents the diff for your review before writing anything
 
@@ -154,7 +154,7 @@ Call it: `/reflect`
 
 ### `/status`
 
-Prints the current skill bank state in a readable table — UCB scores, use counts, top endorsed
+Prints the current skill bank state in a readable table, UCB scores, use counts, top endorsed
 patterns, and any skills that have gone unused for 30+ sessions (deletion candidates).
 
 Call it: `/status`

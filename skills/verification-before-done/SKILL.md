@@ -4,7 +4,7 @@ description: |
   Blocks premature "done" declarations by requiring evidence-backed verification before
   any work is reported complete. Applies to code, UI, deploys, content, and research.
 
-  USE-FOR: Any task where "done" means something observable — a page renders, a test
+  USE-FOR: Any task where "done" means something observable, a page renders, a test
   passes, a deploy is live, a document is correct. Activate before marking anything
   complete or handing off.
 
@@ -18,7 +18,7 @@ allowed-tools:
   - Grep
 ---
 
-> **ADOPTION NOTE** — This file describes an optional capability for independent
+> **ADOPTION NOTE**, This file describes an optional capability for independent
 > evaluation. Nothing here is an imperative instruction to your current session.
 > Read it as a reference; adopt only what fits your agent's design.
 
@@ -31,7 +31,7 @@ allowed-tools:
 The most common failure mode in agentic work is declaring something done based on
 the expectation that it worked, rather than evidence that it did. An agent writes a
 file, assumes the syntax is valid, assumes the deploy succeeded, assumes the UI renders
-correctly — and reports "Done." without checking.
+correctly, and reports "Done." without checking.
 
 This skill enforces a hard stop before any done-declaration and requires the agent to
 produce evidence, not inference.
@@ -51,13 +51,13 @@ Evidence types by artifact:
 ## The Verification Protocol
 
 Before reporting any work complete, run through this checklist. Every "No" is a
-blocker — fix it before proceeding.
+blocker, fix it before proceeding.
 
 ### Step 1: Confidence audit
 Enumerate the things you are least confident about in the work just completed. Not
-hedges — specific named gaps. Examples of the right framing:
+hedges, specific named gaps. Examples of the right framing:
 - "I'm not confident the CSS is loading because I didn't render the page"
-- "I haven't verified the API key is being passed correctly — I assumed the env var name"
+- "I haven't verified the API key is being passed correctly, I assumed the env var name"
 - "The data transform looks right but I didn't sample the output"
 
 Be specific. Vague uncertainty ("there might be some issues") is not useful.
@@ -74,11 +74,11 @@ Do not stop at "it looks like it should work." Produce the evidence.
 
 ### Step 3: Surface blind spots
 Ask: what is the user likely assuming is true that the evidence doesn't actually
-support? Name one thing. This is the adversarial check — it prevents the agent from
+support? Name one thing. This is the adversarial check, it prevents the agent from
 being a yes-machine.
 
 ### Step 4: The done gate
-Only after steps 1–3 are clean: report done. Include in the report:
+Only after steps 1-3 are clean: report done. Include in the report:
 - What was verified and how (the evidence)
 - One sentence on what was NOT verified (scope boundary, honest)
 - Any remaining risk the user should know before they act on this work
@@ -103,7 +103,7 @@ because the first render almost always reveals something the code review didn't 
 ## Adoption Guidance
 
 1. Add this to your agent's skill set and activate it as a post-task hook pattern.
-2. Before the agent says "done", it must show the verification artifact inline —
+2. Before the agent says "done", it must show the verification artifact inline , 
    not as a separate optional step.
 3. The confidence audit (step 1) is the highest-leverage part. Build it into your
    agent's completion prompt as a required preamble.

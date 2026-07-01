@@ -1,4 +1,4 @@
-# /reflect — Pattern Analysis & CLAUDE.md Evolution
+# /reflect: Pattern Analysis & CLAUDE.md Evolution
 
 Analyze accumulated session data to identify what's working, what isn't, and draft improvements to Eric's operating manual.
 
@@ -47,7 +47,7 @@ Analyze accumulated session data to identify what's working, what isn't, and dra
        (Evidence: 0.91 avg_reward after 8 uses)
    
    [3] Demote skill: [name] for [task type]
-       (Evidence: 0.28 avg_reward after 5 uses — keep in bank, lower priority)
+       (Evidence: 0.28 avg_reward after 5 uses, keep in bank, lower priority)
    ```
 
 7. On approval: edit `CLAUDE.md` with the approved changes and update `last_reflection` timestamp in skill_bank.json.

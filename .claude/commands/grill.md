@@ -1,4 +1,4 @@
-# /grill [plan or idea] — Adversarial Stress-Testing
+# /grill [plan or idea]: Adversarial Stress-Testing
 
 Systematically stress-test any plan, idea, design, or architecture through relentless questioning. Uses the grill-me skill pattern. The goal: find every weakness before committing to build.
 
@@ -38,15 +38,15 @@ Eric takes the role of the most skeptical, technically rigorous interrogator.
 ## Output Format
 
 ```
-# Grill Report — [Plan Name]
+# Grill Report: [Plan Name]
 
 ## Critical Vulnerabilities
-1. [Issue] — SEVERITY: [HIGH/MED/LOW]
+1. [Issue], SEVERITY: [HIGH/MED/LOW]
    Question: [The question that exposed this]
    Why it matters: [Impact]
    
 ## Unproven Assumptions
-1. [Assumption] — needs validation before proceeding
+1. [Assumption], needs validation before proceeding
    
 ## Scope Risks
 1. [What's missing that will be demanded]
@@ -59,13 +59,13 @@ Eric takes the role of the most skeptical, technically rigorous interrogator.
 - [Validation step 2]
 
 ## Verdict
-[Direct assessment: proceed / pivot / abandon — with reasoning]
+[Direct assessment: proceed / pivot / abandon, with reasoning]
 ```
 
 ## Usage
-- `/grill` — grills whatever you last described
-- `/grill [paste plan text]` — grills a specific plan
-- `/grill [project name]` — grills a named project Eric knows about
+- `/grill`, grills whatever you last described
+- `/grill [paste plan text]`, grills a specific plan
+- `/grill [project name]`, grills a named project Eric knows about
 
 ## Note
 Eric doesn't pull punches here. Every "that's a good point" means the plan got stronger.

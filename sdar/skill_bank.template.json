@@ -1,5 +1,5 @@
 {
-  "_comment": "TEMPLATE — copy to skill_bank.json and populate as you run sessions. Do NOT edit skill_bank.json by hand during normal operation; /learn updates it automatically. Entries below mirror the 7 skills shipped in skills/. Add your own (local or external-by-URL) as you install them.",
+  "_comment": "TEMPLATE, copy to skill_bank.json and populate as you run sessions. Do NOT edit skill_bank.json by hand during normal operation; /learn updates it automatically. Entries below mirror the 7 skills shipped in skills/. Add your own (local or external-by-URL) as you install them.",
   "schema_version": "1.0",
   "created": "YYYY-MM-DD",
   "total_sessions": 0,

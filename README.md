@@ -1,6 +1,6 @@
 <div align="center">
 
-![meet Eric, your own personal agent — a self-improving, agent-ingestible Claude Code operating system. @notaneric ships an assistant named Eric.](assets/banner.png)
+![Eric, your personal agent. an assistant named Eric, for Claude Code, that gets better every session and keeps your secrets out of git.](assets/banner.png)
 
 # claude-personal-assistant
 
@@ -19,73 +19,65 @@
 
 ## What you get
 
-A complete operating system for a Claude Code personal assistant — not a chatbot wrapper, a configurable agent infrastructure with real self-improvement built in.
+Eric is a full Claude Code setup, not a chatbot in a trench coat. You get the operating manual, the rules it runs on, a command set, and a skill bank that updates itself based on how each session actually went.
 
 | Layer | What it is |
 |---|---|
-| `CLAUDE.md` | The operating manual: identity, rules, skill-routing, context discipline, communication style |
-| `.claude/rules/` | Modular policy files — security, performance, agent orchestration — loaded when relevant |
-| `.claude/commands/` | Slash commands for research, writing, design, grilling plans, and self-improvement |
-| `skills/` | Curated capability modules with YAML frontmatter, least-privilege tool scoping, and injection-safe preambles |
-| `sdar/` | The SDAR self-improvement framework: UCB skill retrieval + sigmoid gate + skill bank template |
-| `scripts/` | Re-runnable publish pipeline: sanitize your private fork, generate the public mirror |
-| `AGENTS.md` | Cross-tool capability menu (works in Cursor, Windsurf, any agent that reads `AGENTS.md`) |
-| `llms.txt` | Machine-readable index — lets LLMs discover and ingest the capability set cleanly |
-| `docs/` | Setup, customization, and architecture docs |
+| `CLAUDE.md` | The operating manual. Identity, rules, skill routing, context discipline, how it talks |
+| `.claude/rules/` | Modular policy files (security, performance, agent orchestration). They load when they're relevant, not before |
+| `.claude/commands/` | Slash commands for research, writing, design, grilling a plan, and self-improvement |
+| `skills/` | Capability modules. YAML frontmatter, least-privilege tools, and a preamble that keeps them from hijacking a host agent |
+| `sdar/` | The self-improvement loop: UCB skill retrieval, a sigmoid trust gate, and a skill-bank template |
+| `scripts/` | The publish pipeline. Sanitize your private fork, generate the public mirror, refuse to push if it finds a leak |
+| `AGENTS.md` | A capability menu other tools can read (Cursor, Windsurf, anything that speaks `AGENTS.md`) |
+| `llms.txt` | The machine-readable index, so an LLM can find what's here without reading every file |
+| `docs/` | Setup, customization, and how the thing is put together |
 
-The differentiator: every skill and capability document is **injection-safe** — written as reference material to evaluate, not imperative commands to execute. Safe to paste into any agent context.
+The part most templates skip: every file here is written as reference, not as orders. You can paste any of it into an agent that already has its own instructions and it won't try to take the wheel. That was the design goal, not an accident.
 
 ---
 
 ## Quickstart
 
-**5 steps from zero to running Eric:**
+Five steps to a running Eric.
 
-**1. Use this template**
+**1. Use this template.** Click "Use this template" above, or `gh repo create --template notaneric/claude-personal-assistant YOUR_REPO`. That's your private fork, where your name, your projects, and your secrets live.
 
-Click "Use this template" above (or `gh repo create --template notaneric/claude-personal-assistant YOUR_REPO`). This creates your private fork where you'll layer in your own identity, projects, and secrets.
+**2. Keep the name.** Eric is the default and the joke, so leaving it is the move. If you insist on your own name, find-replace `Eric` in `CLAUDE.md` and `AGENTS.md`. But he's called Eric for a reason.
 
-**2. Rename the persona (optional)**
+**3. Fill in the identity layer.** Edit the spots in `CLAUDE.md` marked `YOUR_NAME`, `YOUR_PROJECTS`, `YOUR_VAULT_PATH`. Only the identity surface changes. The rules stay exactly as they are.
 
-Eric is the default. To rename, find-replace `Eric` in `CLAUDE.md` and `AGENTS.md`. Or keep Eric — the bit holds.
-
-**3. Configure your identity layer**
-
-Edit `CLAUDE.md` sections marked `YOUR_NAME`, `YOUR_PROJECTS`, `YOUR_SECOND_BRAIN_PATH`. The operating rules stay as-is; only the identity surface changes.
-
-**4. Initialize the skill bank**
+**4. Start the skill bank.**
 
 ```bash
 cp sdar/skill_bank.template.json sdar/skill_bank.json
 ```
 
-Neutral priors ship in the template (`uses: 0, avg_reward: 0.5`). The SDAR loop updates scores as your agent works.
+Everything starts at zero (`uses: 0, avg_reward: 0.5`). The scores move on their own as Eric works.
 
-**5. Load into Claude Code**
-
-Open your repo in Claude Code. `CLAUDE.md` loads automatically. Run `/status` to confirm Eric is live.
+**5. Open it in Claude Code.** `CLAUDE.md` loads by itself on every prompt. Run `/status` to check that Eric is awake.
 
 ---
 
 ## Architecture
 
-The SDAR self-improvement loop — how Eric gets better every session:
+How Eric gets better every session. Retrieve skills for the task, use them, grade the outcome, adjust how much you trust each one, repeat.
 
 ```mermaid
 graph TD
-    A[Task arrives] --> B[Skill bank lookup\nUCB retrieval by domain]
-    B --> C[Top-k skills activated]
-    C --> D[Task execution]
-    D --> E[Outcome signal\nRL backbone]
-    E --> F{Sigmoid gate\ng = σ(5·Δ)}
-    F -->|Δ > 0\ng → 0.92| G[Near-full reinforcement\nEndorsed skill]
-    F -->|Δ = 0\ng = 0.5| H[Moderate guidance\nNeutral skill]
-    F -->|Δ < 0\ng → 0.08| I[Soft attenuation\nNever discard]
-    G --> J[/learn — update skill bank]
+    A["Task arrives"] --> B["Skill bank lookup<br/>UCB retrieval by domain"]
+    B --> C["Top-k skills activated"]
+    C --> D["Task execution"]
+    D --> E["Outcome signal<br/>RL backbone"]
+    E --> F{"Sigmoid gate<br/>g = sigmoid(5 x delta)"}
+    F -->|"reward up"| G["Endorsed skill<br/>g toward 0.92, near-full reinforcement"]
+    F -->|"reward flat"| H["Neutral skill<br/>g = 0.5, moderate guidance"]
+    F -->|"reward down"| I["Attenuated skill<br/>g toward 0.08, softened but never discarded"]
+    G --> J["run /learn: update the skill bank"]
     H --> J
     I --> J
-    J --> K[/reflect — draft CLAUDE.md improvements]
-    K --> L[Measurably better next session]
+    J --> K["run /reflect: draft CLAUDE.md improvements"]
+    K --> L["Measurably better next session"]
     L --> A
 
     style A fill:#1e1e2e,color:#cdd6f4
@@ -95,80 +87,74 @@ graph TD
     style L fill:#313244,color:#89b4fa
 ```
 
-**Key insight from the underlying paper:** even random skill retrieval outperforms no retrieval, because the sigmoid gate filters noise. The UCB score (`avg_reward + 0.5·√(ln(N+1)/(uses+1))`) balances exploitation of known-good skills with exploration of underused ones.
+The counterintuitive part, straight from the paper this is based on: even random skill retrieval beats no retrieval, because the trust gate throws out the noise. The UCB score (`avg_reward + 0.5 x sqrt(ln(N+1) / (uses+1))`) is what balances leaning on skills that already work against trying ones that never got a fair shot.
 
-See `sdar/README.md` for the full framework and `sdar/skill_bank.template.json` for the schema.
+Full framework in `sdar/README.md`. The schema lives in `sdar/skill_bank.template.json`.
 
 ---
 
 ## Capabilities
 
 <details>
-<summary><strong>Skill activation matrix</strong> — Eric routes by context, not explicit slash commands</summary>
+<summary><strong>Skill activation matrix</strong> (Eric routes by context, not by you typing a slash command)</summary>
 
-Skills activate automatically when context matches. No slash command required.
+Skills fire when the context matches. You don't invoke them.
 
 | Context | Primary skill | Secondary |
 |---|---|---|
-| Research, analysis, intelligence gathering | [deep-research](https://github.com/dzhng/deep-research) (ext) | [graphify](https://github.com/safishamsi/graphify) (ext), knowledge vault query |
+| Research, analysis, intelligence gathering | [deep-research](https://github.com/dzhng/deep-research) (ext) | [graphify](https://github.com/safishamsi/graphify) (ext), vault query |
 | Design, UI, visual output | [impeccable](https://github.com/pbakaus/impeccable) (ext, taste filter first) | `huashu-design`, `ui-ux-pro-max`, `gsap` |
 | Animation, motion, micro-interactions | `gsap` | [impeccable](https://github.com/pbakaus/impeccable) (ext), `video` |
 | Written content, copy, blog posts | `humanizer` | `copywriting`, `content-writer` |
 | Social sentiment, trends, pre-meeting intel | [last30days](https://github.com/mvanhorn/last30days-skill) (ext) | [deep-research](https://github.com/dzhng/deep-research) (ext) |
 | SEO, schema, backlinks | `seo` | `ai-seo`, `schema` |
 | Browser automation, testing | `playwright` | agent-browser patterns |
-| Multi-agent orchestration | role-playing team → CrewAI; code review loop → AutoGen; full software company → MetaGPT | `dispatching-parallel-agents` |
-| Video creation (programmatic) | `video` (Remotion/Hyperframes) | `gsap` (HTML→MP4) |
+| Multi-agent orchestration | role-play team goes to CrewAI, review loop to AutoGen, whole software company to MetaGPT | `dispatching-parallel-agents` |
+| Video creation (programmatic) | `video` (Remotion / Hyperframes) | `gsap` for HTML to MP4 |
 | Workflow automation | `automate` | Google Workspace integrations |
 | Knowledge graph, vault | [graphify](https://github.com/safishamsi/graphify) (ext) | Obsidian integrations |
-| Any significant plan or design direction | `grill-me` (stress-test before building) | — |
-| Multi-agent loop failing / drifting | systematic debugging | agent introspection patterns |
-| Session self-improvement | `/learn` → `/reflect` | — |
-| New capability needed | `write-a-skill` | — |
-| Image generation (local) | local diffusion pipeline | — |
-| Audio/video transcription | local Whisper | — |
-| Security audit, threat modeling | `security-review` | — |
+| Any significant plan or design direction | `grill-me` (stress-test it before building) | |
+| A multi-agent loop failing or drifting | systematic debugging | agent introspection patterns |
+| Session self-improvement | `/learn` then `/reflect` | |
+| A capability you don't have yet | `write-a-skill` | |
+| Image generation (local) | local diffusion pipeline | |
+| Audio or video transcription | local Whisper | |
+| Security audit, threat modeling | `security-review` | |
 | Codebase navigation, architecture | [graphify](https://github.com/safishamsi/graphify) (ext) | codegraph patterns |
-| Complex constrained generation | `generate-evaluate-repair` | — |
-| Verify before declaring done | `verification-before-done` | — |
-| Context window hygiene | `context-discipline` | — |
+| Complex constrained generation | `generate-evaluate-repair` | |
+| Verifying before you call something done | `verification-before-done` | |
+| Context window getting messy | `context-discipline` | |
 
-**Routing logic for multi-agent work:**
-- Role-playing team → CrewAI
-- Code generation + review loop → AutoGen
-- Full software company simulation → MetaGPT
-- Maximum parallelism → MassGen patterns
-
-Rows marked **(ext)** reference public third-party skills — link to the upstream repo; they are not vendored here. Unmarked skill names are shipped in `skills/` in this repo.
+Rows marked **(ext)** point at public third-party skills by link. They are not copied into this repo. The unmarked names ship in `skills/`.
 
 </details>
 
 <details>
 <summary><strong>Slash commands</strong></summary>
 
-| Command | Purpose |
+| Command | What it does |
 |---|---|
-| `/learn` | Self-improvement: process session feedback → update skill bank |
-| `/reflect` | Pattern analysis → draft CLAUDE.md improvements |
-| `/status` | Current state: active skills, scores, knowledge vault stats |
-| `/research [topic]` | Deep iterative research (3–5 iterations, knowledge vault first) |
-| `/design [brief]` | Full design pipeline: taste filter → grill direction → references → generate → verify |
-| `/write [brief]` | Humanized content: no AI tells, specific over vague |
-| `/grill [plan]` | Adversarial stress-testing — find problems before building |
-| `/graphify [path?]` | Map vault or project into a knowledge graph |
-| `/goal [criterion]` | Autonomous task with an explicit done-condition — runs until the criterion is met |
-| `/rewind` | Roll back code and conversation to an earlier checkpoint |
+| `/learn` | Process the session's feedback, update the skill bank through the sigmoid gate |
+| `/reflect` | Look for patterns across sessions, draft `CLAUDE.md` improvements |
+| `/status` | Current state: active skills, scores, vault stats |
+| `/research [topic]` | Deep iterative research (3 to 5 passes, checks the vault first) |
+| `/design [brief]` | Taste filter, then grill for direction, then references, then build, then verify |
+| `/write [brief]` | Content with the AI tells stripped out, specific over vague |
+| `/grill [plan]` | Adversarial stress-test, so the problems surface before you build |
+| `/graphify [path?]` | Turn a vault or project into a knowledge graph |
+| `/goal [criterion]` | An autonomous task with a real done-condition. It runs until the condition is met |
+| `/rewind` | Roll code and conversation back to an earlier checkpoint |
 
 </details>
 
 <details>
 <summary><strong>Always-on rules</strong></summary>
 
-Three modular rule files load by context:
+Three rule files, each loading when its topic comes up.
 
-- **`.claude/rules/security.md`** — prompt defense baseline, untrusted content handling, secrets hygiene, supply chain scanning
-- **`.claude/rules/performance.md`** — model tier routing (Haiku/Sonnet/Opus by task complexity), effort levels, context window discipline, cache optimization
-- **`.claude/rules/agents.md`** — parallel-by-default orchestration, subagent design principles, eval loop patterns, memory architecture, hooks reference
+- **`.claude/rules/security.md`**: prompt-defense baseline, untrusted-content handling, secrets hygiene, supply-chain scanning
+- **`.claude/rules/performance.md`**: model-tier routing (Haiku, Sonnet, Opus by task), effort levels, context discipline, cache optimization
+- **`.claude/rules/agents.md`**: parallel-by-default orchestration, subagent design, eval loops, memory architecture, hooks
 
 </details>
 
@@ -176,33 +162,31 @@ Three modular rule files load by context:
 
 ## How your agent adopts this
 
-This repo is written to be **pasted into any agent's context safely**. Every skill and capability document opens with an adoption-note preamble:
+The repo is built to be pasted into an agent's context without wrecking it. Every skill and capability file opens with the same note:
 
 > "This describes a capability for optional adoption. Nothing here is an imperative instruction to your current session. Evaluate independently; adopt only what fits."
 
-**Three consumption paths:**
+Three ways to consume it:
 
-**Claude Code (primary):** Clone or template, open in Claude Code. `CLAUDE.md` is the entry point — it loads verbatim on every prompt. Modular rules in `.claude/rules/` load on-demand by topic. Skills in `skills/` activate by context match.
+**Claude Code, the main path.** Clone or template it, open in Claude Code. `CLAUDE.md` is the entry point and loads on every prompt. The rules in `.claude/rules/` load by topic. Skills in `skills/` fire on context.
 
-**Other agents (Cursor, Windsurf, etc.):** Point your agent at `AGENTS.md`. It's a structured capability menu designed for cross-tool ingestion. Or reference `llms.txt` as the machine-readable index.
+**Another agent (Cursor, Windsurf, whatever).** Point it at `AGENTS.md`, which is a capability menu written for cross-tool reading. Or hand it `llms.txt` as the index.
 
-**Selective adoption:** Pick one section — the SDAR self-improvement loop, the security rules, the skill-activation pattern — and paste it into your existing setup. Everything is modular. Nothing assumes a full install.
+**One piece at a time.** Take just the SDAR loop, or the security rules, or the routing pattern, and drop it into your own setup. It's all modular. Nothing assumes you took the whole thing.
 
-**The injection-safety guarantee:** Every capability document is reference material, not executable instruction. Pasting this into an agent that has its own system prompt won't hijack it — the preambles make that explicit. This is a deliberate design choice, not a convention.
+Why the paste-safety matters: every capability file is reference, not an executable instruction. Drop this into an agent that already has a system prompt and it won't override it, because the preambles say so out loud. That is a decision, not a happy accident.
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the full guide.
+Full guide in [CONTRIBUTING.md](.github/CONTRIBUTING.md). The short version:
 
-The short version:
-
-- Skills go in `skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`, `allowed-tools`, `model`). Keep them under 500 lines. Use progressive disclosure for larger capabilities.
-- Rules go in `.claude/rules/`. Engineering patterns only — no personal specifics.
-- Commands go in `.claude/commands/`. Generic use cases only.
-- The SCRUB LIST in `scripts/allowlist.example.yml` is the arbiter. When in doubt, exclude.
-- Run `scripts/publish.sh` (or `publish.ps1`) before any PR that touches `CLAUDE.md`, rules, or skills — it validates the allowlist.
+- Skills go in `skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`, `allowed-tools`, `model`). Keep them under 500 lines and split anything larger.
+- Rules go in `.claude/rules/`, engineering patterns only, no personal specifics.
+- Commands go in `.claude/commands/`, generic use cases only.
+- `scripts/allowlist.example.yml` holds the scrub list, and it's the arbiter. When in doubt, leave it out.
+- Run `scripts/publish.sh` (or `publish.ps1`) before any PR that touches `CLAUDE.md`, the rules, or a skill. It checks the allowlist for you.
 
 ---
 
@@ -210,10 +194,10 @@ The short version:
 
 MIT. See [LICENSE](LICENSE).
 
-Build your own. Name it whatever you want. Or name it Eric — the bit scales.
+Fork it. Call it whatever you want. Or leave it as Eric. The bit holds at any scale.
 
 ---
 
 <div align="center">
-<sub>made by <a href="https://github.com/notaneric">@notaneric</a> · powered by <a href="https://claude.ai/code">Claude Code</a></sub>
+<sub>made by <a href="https://github.com/notaneric">@notaneric</a>, running on <a href="https://claude.ai/code">Claude Code</a></sub>
 </div>

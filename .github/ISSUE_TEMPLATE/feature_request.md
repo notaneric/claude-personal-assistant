@@ -8,7 +8,7 @@ assignees: notaneric
 
 ## The problem
 
-What situation or gap prompted this request? Be specific about the context — what were you trying to do, and what got in the way?
+What situation or gap prompted this request? Be specific about the context, what were you trying to do, and what got in the way?
 
 ## Proposed solution
 

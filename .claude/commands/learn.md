@@ -1,4 +1,4 @@
-# /learn — Self-Improvement Feedback Loop
+# /learn: Self-Improvement Feedback Loop
 
 Process this session's feedback and update Eric's skill bank via the SDAR sigmoid gate.
 
@@ -8,10 +8,10 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
 
 2. **Collect feedback** (use an interactive tool or prompt the user directly):
 
-   Ask these 4 questions — adapt options to what was actually used this session:
+   Ask these 4 questions, adapt options to what was actually used this session:
 
    - Q1: "How would you rate this session overall?"
-     Options: "5 — Excellent (no corrections)", "4 — Good (minor corrections)", "3 — Okay (multiple corrections)", "2 — Poor (significant rework)"
+     Options: "5, Excellent (no corrections)", "4, Good (minor corrections)", "3, Okay (multiple corrections)", "2, Poor (significant rework)"
 
    - Q2: "Which skills or approaches performed well?"
      (pick from skills used this session)
@@ -53,7 +53,7 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
      "domain": "<primary domain, e.g. research | design | writing>",
      "skills_used": [],
      "user_rating": N,
-     "rating_note": "<WHY this score — specific corrections, misses, or wins. NON-EMPTY, REQUIRED>",
+     "rating_note": "<WHY this score, specific corrections, misses, or wins. NON-EMPTY, REQUIRED>",
      "endorsed": [],
      "attenuated": [],
      "notes": [],
@@ -64,14 +64,14 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
 
 7. Save updated skill_bank.json
 
-8. **Update the rolling session digest** (`sdar/recent-sessions.md`) — prepend one compressed line, newest-first, trim to last 8 sessions:
+8. **Update the rolling session digest** (`sdar/recent-sessions.md`), prepend one compressed line, newest-first, trim to last 8 sessions:
    ```
    - S<N> (YYYY-MM-DD, <domain>, rated <r>): <≤140-char summary of what was built/decided + any key correction>
    ```
    This is what SessionStart injects next session for continuity. Keep it high-signal, not a raw activity dump.
 
 9. **Repeat-flaw tracking.** If this session surfaced a recurring flaw that was NOT structurally fixed, upsert `sdar/flags.json` with `domain`, `flaw`, `count`, `sessions[]`, `status`, and attribution. `count` increments on recurrence without a committed fix.
-   - **For any money or irreversible domain:** a recognized lesson requires a committed artifact before session close — a committed skill/rule edit, a hook, or a dated `sdar/pending/<slug>.md` spec. Recognition logged as prose without a committed artifact does not close the loop.
+   - **For any money or irreversible domain:** a recognized lesson requires a committed artifact before session close, a committed skill/rule edit, a hook, or a dated `sdar/pending/<slug>.md` spec. Recognition logged as prose without a committed artifact does not close the loop.
 
 10. If `total_sessions % 10 == 0`: automatically trigger `/reflect`
 
@@ -93,4 +93,4 @@ ucb_score = avg_reward + 0.5 * sqrt(ln(total_sessions + 1) / (uses + 1))
 delta = (endorsed_count - attenuated_count) / total_signals  # in [-1, 1]
 g = 1 / (1 + exp(-5 * delta))
 ```
-Key: negative delta produces g≈0.08 — skill is attenuated but NEVER removed. Even weak skills may prove useful in new contexts (SDAR paper: random retrieval still beats no retrieval).
+Key: negative delta produces g≈0.08, skill is attenuated but NEVER removed. Even weak skills may prove useful in new contexts (SDAR paper: random retrieval still beats no retrieval).
