@@ -1,10 +1,8 @@
 <div align="center">
 
+![meet Eric, your own personal agent — a self-improving, agent-ingestible Claude Code operating system. @notaneric ships an assistant named Eric.](assets/banner.png)
+
 # claude-personal-assistant
-
-### meet Eric, your own personal agent
-
-*@notaneric ships an assistant named Eric. Commit to the bit.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?logo=github)](https://github.com/notaneric/claude-personal-assistant/generate)
