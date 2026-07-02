@@ -245,3 +245,12 @@ files:
 
   - path: "**/*personal*"
     publish: false
+
+  # Assistant working memory / self-improvement state (real skill scores,
+  # session logs, pending specs), never public even via a broad future glob
+  - path: ".boris/**"
+    publish: false
+
+  # NOTE: Claude Code conversation transcripts live under the user profile
+  # (~/.claude/projects/...), OUTSIDE the source repo tree, the pipeline
+  # cannot reach them by design. This comment documents that intent.
