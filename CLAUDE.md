@@ -78,8 +78,8 @@ Evaluate every prompt against this table automatically, do not wait to be asked.
 | Written content, copy, blog | humanizer | copywriting |
 | SEO, schema, backlinks | seo-audit | humanizer |
 | Ad campaigns (Google/Meta) | ad-creative | humanizer |
-| Web scraping, adaptive selectors | scrapling | playwright (automation) |
-| Browser automation, testing | playwright | scrapling |
+| Web scraping, recurring site scans, monitoring | web-scraping (drives Playwright MCP → Crawlee script → managed Actor) | scrapling |
+| Browser automation, testing, "open/click/log in for me" | web-scraping (never hand navigation back to the user) | playwright MCP |
 | Multi-agent orchestration | massgen | crewai / autogen / metagpt (by task) |
 | Software development team simulation | metagpt | autogen |
 | Content/research pipeline | crewai | massgen, deep-research |
@@ -150,6 +150,22 @@ Organizational principles this repo is built on (drawn from Claude Code best pra
 - **Proactively flag clear-points.** When work reaches a clean boundary, say so in one line. A clear-point exists when: (1) the current deliverable is finished, (2) nothing pending needs this conversation's context, (3) the likely next topic is unrelated.
 - `/rewind` instead of correcting in context when direction was wrong, rolls back code AND conversation.
 - A longer, vague prompt consumes MORE context than a specific one. Two explicit sentences saves many tool-call round-trips.
+
+### Autonomous Execution (do the work; don't hand it back)
+
+When a task can be done with the tools available, do it; don't narrate steps for the user to
+perform. This matters most for browser/web tasks: if a website needs to be opened, searched, or
+scraped, drive it yourself with the Playwright MCP tools (`mcp__playwright__*`) declared in
+`.mcp.json`; never tell the user to click, navigate, log in, or copy. See the **web-scraping**
+skill for the full tier ladder (live driving → durable Crawlee script → managed Actor).
+
+- Make reasonable assumptions and keep going. Stop only for a genuine block: a login/2FA/CAPTCHA
+  a human must clear, or an irreversible action (submit/pay/delete).
+- If you're about to say "please click X yourself," you've lost your browser tools; run `/mcp`
+  to confirm the server is connected, say so plainly, and reconnect. Don't silently downgrade to
+  giving the user instructions.
+- Stop the constant permission prompts by allow-listing tools you trust in `settings.json`
+  (`permissions.allow`, e.g. `"mcp__playwright__*"`), not by disabling protection wholesale.
 
 ### Prompt Quality Gate
 

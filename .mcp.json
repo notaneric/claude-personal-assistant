@@ -1,0 +1,9 @@
+{
+  "_comment": "Project-scoped MCP servers. Every agent that clones/references this repo inherits these after a one-time approval prompt. Requires Node.js 18+. Cross-platform: the bare-npx form below works on macOS and Linux, and on Windows in most setups. WINDOWS FALLBACK: if a server fails to launch with 'spawn npx ENOENT' (Claude Code issue #58510), change that server's \"command\" to \"cmd\" and prefix its args with \"/c\", \"npx\", e.g. { \"command\": \"cmd\", \"args\": [\"/c\", \"npx\", \"-y\", \"@playwright/mcp@latest\"] }. Do NOT use the cmd form on macOS/Linux (there is no 'cmd'). This backs the 'Browser automation' and 'Web scraping' rows in the skill matrix with a real tool.",
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
