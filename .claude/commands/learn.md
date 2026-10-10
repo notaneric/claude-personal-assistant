@@ -85,7 +85,7 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
 
 ## UCB Formula
 ```
-ucb_score = avg_reward + 0.5 * sqrt(ln(total_sessions + 1) / (uses + 1))
+ucb_score = avg_reward + min(0.5 * sqrt(ln(total_sessions + 1) / (uses + 1)), 0.25)
 ```
 
 ## Sigmoid Gate

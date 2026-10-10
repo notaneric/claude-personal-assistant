@@ -42,7 +42,7 @@ SLASH COMMANDS AVAILABLE
 SELF-IMPROVEMENT CYCLE
   Algorithm:  SDAR (sigmoid gate + UCB retrieval)
   Gate:       g = σ(5·Δ), asymmetric trust
-  Formula:    UCB = avg_reward + 0.5·sqrt(ln(N+1)/(uses+1))
+  Formula:    UCB = avg_reward + min(0.5·sqrt(ln(N+1)/(uses+1)), 0.25)
   Status:     [active / needs /learn to prime]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -52,5 +52,5 @@ SELF-IMPROVEMENT CYCLE
 Read `sdar/skill_bank.json` and your knowledge vault directory to populate the dashboard.
 Compute live UCB scores using:
 ```
-ucb_score = avg_reward + 0.5 * sqrt(ln(total_sessions + 1) / (uses + 1))
+ucb_score = avg_reward + min(0.5 * sqrt(ln(total_sessions + 1) / (uses + 1)), 0.25)
 ```

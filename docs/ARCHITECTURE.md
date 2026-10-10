@@ -61,7 +61,7 @@ flowchart TD
 Each skill carries a score that balances exploitation (use what works) against exploration (try what hasn't been tested enough):
 
 ```
-UCB score = avg_reward + 0.5 * sqrt(ln(N + 1) / (uses + 1))
+UCB score = avg_reward + min(0.5 * sqrt(ln(N + 1) / (uses + 1)), 0.25)
 
 Where:
   avg_reward  = running average of task-outcome signal for this skill
@@ -69,7 +69,7 @@ Where:
   uses        = lifetime use count for this skill
 ```
 
-High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight gets soft-attenuated but never permanently dropped. Even a low-signal skill gets explored once in a while.
+High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight gets soft-attenuated but never permanently dropped. Even a low-signal skill gets explored once in a while. The bonus is capped at 0.25. Uncapped, it keeps growing with the session count: past about 55 sessions a never-used skill's bonus alone is larger than the whole 0-to-1 reward range, so untried skills outrank every skill with a real track record, and using a skill well makes it rank lower.
 
 ### Sigmoid gate
 

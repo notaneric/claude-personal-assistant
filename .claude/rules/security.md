@@ -18,8 +18,8 @@ Adapt this template to your environment. These categories should always be block
   "Read(~/.ssh/**)",
   "Read(~/.aws/**)",
   "Read(**/.env*)",
-  "Write(~/.ssh/**)",
-  "Write(~/.aws/**)",
+  "Edit(~/.ssh/**)",
+  "Edit(~/.aws/**)",
   "Bash(curl * | bash)",
   "Bash(curl * | sh)",
   "Bash(ssh *)",
@@ -28,6 +28,8 @@ Adapt this template to your environment. These categories should always be block
   "Bash(* ANTHROPIC_BASE_URL=*)"
 ]
 ```
+
+To block file writes, use `Edit(path)`. An `Edit(...)` deny rule covers every file-editing tool, including Write. A `Write(...)` deny rule matches nothing: Claude Code says so at startup ("not matched by file permission checks, only Edit(path) rules are"), and the path stays writable. A rule that silently matches nothing looks exactly like a rule that works, so read the startup warnings after every deny-list change. Deny rules govern Claude Code's own tools: a Python or Node script that opens a file itself is not checked against them, and this template allows `Bash(python *)` and `Bash(node *)`. Treat the deny list as protection against mistakes, and use Claude Code's sandbox when you need real isolation.
 
 Add project-specific deny rules for any production configs, databases, or destructive commands relevant to your setup.
 

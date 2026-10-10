@@ -44,8 +44,9 @@ When `/security-audit self` is invoked, check each item and report PASS / FAIL /
 - `Read(~/.ssh/**)` blocked
 - `Read(~/.aws/**)` blocked
 - `Read(**/.env*)` blocked
-- `Write(~/.ssh/**)` blocked
-- `Write(~/.aws/**)` blocked
+- `Edit(~/.ssh/**)` blocked
+- `Edit(~/.aws/**)` blocked
+- No `Write(...)` deny rules: they match nothing, so a `Write(~/.ssh/**)` entry is a FAIL (the path is unprotected), not a PASS
 - `Bash(curl * | bash)` blocked
 - `Bash(curl * | sh)` blocked
 - `Bash(ssh *)` blocked

@@ -95,6 +95,8 @@ scripts/
   publish.sh                 Sanitization pipeline (POSIX)
   publish.ps1                Sanitization pipeline (PowerShell)
   allowlist.example.yml      Default-deny allowlist for the sync gate
+  guards/                    Bash PreToolUse hooks: exit_code_gate, heredoc_gate,
+                             backtick_gate, their tests, mutation_harness.py
 
 docs/
   SETUP.md                   First-time configuration guide

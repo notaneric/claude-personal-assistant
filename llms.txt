@@ -117,3 +117,7 @@ before any public push. Run before every sync to the public mirror.
 
 [scripts/allowlist.example.yml](scripts/allowlist.example.yml), Default-deny allowlist for the
 sync gate. Defines which paths and tokens are safe to publish.
+
+[scripts/guards/README.md](scripts/guards/README.md), Bash PreToolUse hooks that block command
+shapes that fail without an error (a piped exit code, a doubled backslash in a heredoc,
+backticks inside a double-quoted interpreter argument), with tests and a mutation harness.

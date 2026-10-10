@@ -58,7 +58,7 @@ Endorsed skills: Δ > 0 → g → 0.92 → near-full reinforcement
 Neutral skills:  Δ = 0 → g = 0.5 → moderate guidance
 Rejected skills: Δ < 0 → g → 0.08 → soft attenuation (never discard)
 
-UCB score: avg_reward + 0.5·√(ln(N+1)/(uses+1))
+UCB score: avg_reward + min(0.5·√(ln(N+1)/(uses+1)), 0.25)
 ```
 
 Key insight: even random retrieval outperforms no retrieval because the gate filters noise. Eric extracts signal from everything.

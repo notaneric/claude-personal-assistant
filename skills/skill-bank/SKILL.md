@@ -50,11 +50,12 @@ Endorsed skills: Δ > 0  →  g → 0.92  (near-full reinforcement)
 Neutral skills:  Δ = 0  →  g = 0.50  (moderate guidance)
 Rejected skills: Δ < 0  →  g → 0.08  (soft attenuation, never discard)
 
-UCB score: avg_reward + 0.5 · √(ln(N + 1) / (uses + 1))
+UCB score: avg_reward + min(0.5 · √(ln(N + 1) / (uses + 1)), 0.25)
 ```
 
 The UCB formula balances exploitation (use high-scoring skills) with exploration
-(try underused skills that might be good). Skills with 0 uses always get explored.
+(try underused skills that might be good). Skills with 0 uses get a bonus, capped at 0.25,
+so an untried skill competes with proven ones without automatically outranking them.
 
 ## Skill Bank Schema
 
@@ -100,7 +101,7 @@ fit the current situation, note the mismatch, it's data for the post-session upd
 1. Rate the outcome quality for each skill that was active (0.0-1.0)
 2. Compute Δ = outcome_quality − avg_reward
 3. Compute new avg_reward = old_avg_reward + (Δ × learning_rate) (learning_rate = 0.1)
-4. Recompute UCB score with updated uses and avg_reward
+4. Recompute UCB score with updated uses and avg_reward (exploration bonus capped at 0.25)
 5. Write back to `sdar/skill_bank.json`
 
 The learning rate of 0.1 means scores shift gradually, not abruptly. A single bad

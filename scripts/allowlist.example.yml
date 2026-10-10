@@ -208,6 +208,17 @@ files:
   - path: "scripts/README.md"
     publish: true
 
+  # Hook targets wired in .claude/settings.example.json. Publish them, or the
+  # published settings point their hooks at files that are not there.
+  - path: "scripts/action_gate.py"
+    publish: true
+
+  - path: "scripts/session_recap.py"
+    publish: true
+
+  - path: "scripts/guards/**"
+    publish: true
+
   # ---------------------------------------------------------------------------
   # EXPLICITLY BLOCKED, kept here as documentation of what must NOT publish
   # ---------------------------------------------------------------------------

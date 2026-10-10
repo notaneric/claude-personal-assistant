@@ -29,6 +29,7 @@ Eric is a full Claude Code setup, not a chatbot in a trench coat. You get the op
 | `skills/` | Capability modules. YAML frontmatter, least-privilege tools, and a preamble that keeps them from hijacking a host agent |
 | `sdar/` | The self-improvement loop: UCB skill retrieval, a sigmoid trust gate, and a skill-bank template |
 | `scripts/` | The publish pipeline. Sanitize your private fork, generate the public mirror, refuse to push if it finds a leak |
+| `scripts/guards/` | Bash hooks that block three command shapes that fail without an error, plus a mutation harness you can point at a check to prove it can fail |
 | `AGENTS.md` | A capability menu other tools can read (Cursor, Windsurf, anything that speaks `AGENTS.md`) |
 | `llms.txt` | The machine-readable index, so an LLM can find what's here without reading every file |
 | `docs/` | Setup, customization, and how the thing is put together |
@@ -87,7 +88,7 @@ graph TD
     style L fill:#313244,color:#89b4fa
 ```
 
-The counterintuitive part, straight from the paper this is based on: even random skill retrieval beats no retrieval, because the trust gate throws out the noise. The UCB score (`avg_reward + 0.5 x sqrt(ln(N+1) / (uses+1))`) is what balances leaning on skills that already work against trying ones that never got a fair shot.
+The counterintuitive part, straight from the paper this is based on: even random skill retrieval beats no retrieval, because the trust gate throws out the noise. The UCB score (`avg_reward + min(0.5 x sqrt(ln(N+1) / (uses+1)), 0.25)`) is what balances leaning on skills that already work against trying ones that never got a fair shot. The 0.25 cap matters: without it the bonus for an untried skill keeps growing with every session until it outranks skills with a strong record.
 
 Full framework in `sdar/README.md`. The schema lives in `sdar/skill_bank.template.json`.
 

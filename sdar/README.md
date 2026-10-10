@@ -47,13 +47,14 @@ update mechanism that runs entirely in-context, no external training required.
 ## UCB score formula
 
 ```
-ucb_score = avg_reward + exploration_c * sqrt( ln(total_sessions + 1) / (uses + 1) )
+ucb_score = avg_reward + min( exploration_c * sqrt( ln(total_sessions + 1) / (uses + 1) ), exploration_cap )
 ```
 
 | Variable | Where it lives | What it does |
 |---|---|---|
 | `avg_reward` | per-skill | Exploitation signal, how well this skill has performed |
 | `exploration_c` | top-level (`0.5` default) | Exploration weight, how much to favour untried skills |
+| `exploration_cap` | top-level (`0.25` default) | Ceiling on the exploration bonus. The bonus is capped at 0.25. Uncapped, it keeps growing with the session count: past about 55 sessions a never-used skill's bonus alone is larger than the whole 0-to-1 reward range, so untried skills outrank every skill with a real track record, and using a skill well makes it rank lower. |
 | `total_sessions` | top-level | Session counter; grows with each `/learn` call |
 | `uses` | per-skill | How many times this skill was activated |
 
@@ -93,6 +94,7 @@ available for tasks where they might still apply.
   "total_sessions": 0,
   "beta": 5.0,
   "exploration_c": 0.5,
+  "exploration_cap": 0.25,
   "skills": {
     "<skill-name>": {
       "domain": "<domain>",
@@ -100,7 +102,7 @@ available for tasks where they might still apply.
       "uses": 0,
       "successes": 0,
       "avg_reward": 0.5,
-      "ucb_score": 1.3326,
+      "ucb_score": 0.5,
       "endorsed_patterns": [],
       "attenuated_patterns": [],
       "notes": [],
