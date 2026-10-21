@@ -1,6 +1,6 @@
 # /learn: Self-Improvement Feedback Loop
 
-Process this session's feedback and update Eric's skill bank via the SDAR sigmoid gate.
+Process this session's feedback and update Eric's skill bank with the SDAR running-mean update.
 
 ## Steps
 
@@ -10,8 +10,21 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
 
    Ask these 4 questions, adapt options to what was actually used this session:
 
-   - Q1: "How would you rate this session overall?"
+   - Q1: "Rate the **process** this session: how the work was done, not how it turned out."
      Options: "5, Excellent (no corrections)", "4, Good (minor corrections)", "3, Okay (multiple corrections)", "2, Poor (significant rework)"
+
+     The rating is the only input to every skill's average, so two rules keep it honest:
+     - **Process, not outcome.** A search that correctly finds nothing, or a sound decision that turned out badly, is not a 4. If the answer names an outcome, record it in `rating_note` and ask for the process rating.
+     - **Score what reached you.** A defect a check caught before you saw it (a test, a dry run, a review) is the system working and does not cost the 5. Without this rule, the more checks the assistant runs, the more defects it "finds", and no session can score 5.
+
+     | score | anchor |
+     |---|---|
+     | 5 | No corrections from you, and nothing wrong reached you. Defects caught by a check are listed with the check that caught them. |
+     | 4 | Something wrong reached you and the assistant found it afterwards, or one correction that forced no rework. |
+     | 3 | Several corrections, or one that forced a rebuild. |
+     | 2 | The result was wrong in a way that meant starting over, or something shipped that should not have. |
+
+     **Self-assessed mode (optional).** Once you trust the assistant's judgment, you can tell it to rate sessions itself. It then asks nothing: it reads the session for your corrections, scores against the anchors above, names every defect with where it was caught, and quotes any rating you volunteered, which always wins. A self-judge drifts toward the middle and toward flattering itself, so the anchors are required in this mode.
 
    - Q2: "Which skills or approaches performed well?"
      (pick from skills used this session)
@@ -26,14 +39,12 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
    - Increment `uses`
    - Update `avg_reward = (avg_reward * (uses-1) + rating/5) / uses`
    - Add task type to `endorsed_patterns` if not present
-   - Apply sigmoid gate: `g = σ(5 · Δ)` where Δ is normalized endorsement ratio
    - Recalculate `ucb_score`
 
 4. For each skill mentioned as underperforming:
    - Increment `uses` (but NOT successes)
-   - Update `avg_reward` with penalty (rating-weighted)
+   - Update `avg_reward = (avg_reward * (uses-1) + (rating-1)/5) / uses`
    - Add task type to `attenuated_patterns`
-   - Apply sigmoid gate with negative Δ → soft attenuation (g≈0.08, never zero)
    - Recalculate `ucb_score`
 
 5. Increment `total_sessions` in skill_bank.json
@@ -79,7 +90,7 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
     ```
     Session #N logged
     Endorsed: [list]  →  UCB scores updated
-    Attenuated: [list]  →  Soft-gated
+    Attenuated: [list]  →  UCB scores updated
     Next reflection in: M sessions
     ```
 
@@ -88,9 +99,6 @@ Process this session's feedback and update Eric's skill bank via the SDAR sigmoi
 ucb_score = avg_reward + min(0.5 * sqrt(ln(total_sessions + 1) / (uses + 1)), 0.25)
 ```
 
-## Sigmoid Gate
-```
-delta = (endorsed_count - attenuated_count) / total_signals  # in [-1, 1]
-g = 1 / (1 + exp(-5 * delta))
-```
-Key: negative delta produces g≈0.08, skill is attenuated but NEVER removed. Even weak skills may prove useful in new contexts (SDAR paper: random retrieval still beats no retrieval).
+## Why there is no trust gate
+
+Earlier versions of this command had a sigmoid gate step, and nothing ever read its output. `ucb_score` uses only `avg_reward`, `uses` and `total_sessions`, so the running mean in steps 3 and 4 is the whole update. Reward is capped at `rating/5`, so after a session rated 3 or lower, every skill that got feedback and was averaging above 0.6 goes down, endorsed ones included. A low average only means a skill is retrieved less often, and the update never removes one.

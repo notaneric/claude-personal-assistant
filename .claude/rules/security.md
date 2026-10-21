@@ -86,6 +86,10 @@ For any autonomous loop (scheduled agents, background workers, trading/automatio
 - Implement process-group kill (not just parent) for unattended loops
 - Heartbeat check: if agent stops responding for a configurable interval, kill and alert
 
+## Gates That Fail Open
+
+A guard that allows everything when its data is missing (a protected-names list, a config file, an index on another drive) is a reasonable design, because a gate that bricks every session when a folder is offline gets disabled. But it must say so. Print a warning at session start whenever a gate is running without its data, and keep a positive-control test that fails on a machine where the data cannot be loaded. A silent fail-open gate reads exactly like a working one, and on a second computer with a different folder layout it can stay empty for weeks.
+
 ## CVE Reference
 
 - **CVE-2025-59536** (CVSS 8.7): Project hooks executed before trust dialog, patched in CC 1.0.111+

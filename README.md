@@ -27,7 +27,7 @@ Eric is a full Claude Code setup, not a chatbot in a trench coat. You get the op
 | `.claude/rules/` | Modular policy files (security, performance, agent orchestration). They load when they're relevant, not before |
 | `.claude/commands/` | Slash commands for research, writing, design, grilling a plan, and self-improvement |
 | `skills/` | Capability modules. YAML frontmatter, least-privilege tools, and a preamble that keeps them from hijacking a host agent |
-| `sdar/` | The self-improvement loop: UCB skill retrieval, a sigmoid trust gate, and a skill-bank template |
+| `sdar/` | The self-improvement loop: UCB skill retrieval, a running-mean reward update, and a skill-bank template |
 | `scripts/` | The publish pipeline. Sanitize your private fork, generate the public mirror, refuse to push if it finds a leak |
 | `scripts/guards/` | Bash hooks that block three command shapes that fail without an error, plus a mutation harness you can point at a check to prove it can fail |
 | `AGENTS.md` | A capability menu other tools can read (Cursor, Windsurf, anything that speaks `AGENTS.md`) |
@@ -62,20 +62,18 @@ Everything starts at zero (`uses: 0, avg_reward: 0.5`). The scores move on their
 
 ## Architecture
 
-How Eric gets better every session. Retrieve skills for the task, use them, grade the outcome, adjust how much you trust each one, repeat.
+How Eric gets better every session. Retrieve skills for the task, use them, rate the process, update each skill's average reward, repeat.
 
 ```mermaid
 graph TD
     A["Task arrives"] --> B["Skill bank lookup<br/>UCB retrieval by domain"]
     B --> C["Top-k skills activated"]
     C --> D["Task execution"]
-    D --> E["Outcome signal<br/>RL backbone"]
-    E --> F{"Sigmoid gate<br/>g = sigmoid(5 x delta)"}
-    F -->|"reward up"| G["Endorsed skill<br/>g toward 0.92, near-full reinforcement"]
-    F -->|"reward flat"| H["Neutral skill<br/>g = 0.5, moderate guidance"]
-    F -->|"reward down"| I["Attenuated skill<br/>g toward 0.08, softened but never discarded"]
+    D --> E["Session rating<br/>the process, 1 to 5"]
+    E --> F["Update running mean<br/>one reward per skill"]
+    F -->|"endorsed"| G["Endorsed skill<br/>reward = rating/5"]
+    F -->|"attenuated"| I["Attenuated skill<br/>reward = (rating-1)/5, never discarded"]
     G --> J["run /learn: update the skill bank"]
-    H --> J
     I --> J
     J --> K["run /reflect: draft CLAUDE.md improvements"]
     K --> L["Measurably better next session"]
@@ -88,7 +86,7 @@ graph TD
     style L fill:#313244,color:#89b4fa
 ```
 
-The counterintuitive part, straight from the paper this is based on: even random skill retrieval beats no retrieval, because the trust gate throws out the noise. The UCB score (`avg_reward + min(0.5 x sqrt(ln(N+1) / (uses+1)), 0.25)`) is what balances leaning on skills that already work against trying ones that never got a fair shot. The 0.25 cap matters: without it the bonus for an untried skill keeps growing with every session until it outranks skills with a strong record.
+The update is a running mean: an endorsed skill's reward is `rating/5`, an attenuated one's is `(rating-1)/5`, and `avg_reward` averages those over every use. Nothing filters out a noisy rating. Reward is capped at `rating/5`, so after a session rated 3 or lower, every skill that got feedback and was averaging above 0.6 goes down, endorsed ones included. The UCB score (`avg_reward + min(0.5 x sqrt(ln(N+1) / (uses+1)), 0.25)`) is what balances leaning on skills that already work against trying ones that never got a fair shot. The 0.25 cap matters: without it the bonus for an untried skill keeps growing with every session until it outranks skills with a strong record.
 
 Full framework in `sdar/README.md`. The schema lives in `sdar/skill_bank.template.json`.
 
@@ -135,7 +133,7 @@ Rows marked **(ext)** point at public third-party skills by link. They are not c
 
 | Command | What it does |
 |---|---|
-| `/learn` | Process the session's feedback, update the skill bank through the sigmoid gate |
+| `/learn` | Process the session's feedback, update each skill's running-mean reward in the skill bank |
 | `/reflect` | Look for patterns across sessions, draft `CLAUDE.md` improvements |
 | `/status` | Current state: active skills, scores, vault stats |
 | `/research [topic]` | Deep iterative research (3 to 5 passes, checks the vault first) |

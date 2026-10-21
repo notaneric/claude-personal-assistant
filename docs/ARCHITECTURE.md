@@ -41,12 +41,10 @@ flowchart TD
     D --> E["Execute task"]
     E --> F{"Session ends"}
     F --> G["run /learn: collect feedback"]
-    G --> H{"Sigmoid gate<br/>g = sigmoid(5 x delta)"}
-    H -->|"reward up"| I["Reinforce skill<br/>g toward 0.92, near-full update"]
-    H -->|"reward flat"| J["Moderate update<br/>g = 0.50, no strong signal"]
-    H -->|"reward down"| K["Soft attenuation<br/>g toward 0.08, never discarded"]
+    G --> H["Update running mean<br/>one reward per skill"]
+    H -->|"endorsed"| I["Endorsed skill<br/>reward = rating/5"]
+    H -->|"attenuated"| K["Attenuated skill<br/>reward = (rating-1)/5, never discarded"]
     I --> L["Update skill_bank.json<br/>avg_reward + uses"]
-    J --> L
     K --> L
     L --> M{"Every 10 sessions?"}
     M -->|"yes"| N["run /reflect: pattern analysis"]
@@ -64,26 +62,24 @@ Each skill carries a score that balances exploitation (use what works) against e
 UCB score = avg_reward + min(0.5 * sqrt(ln(N + 1) / (uses + 1)), 0.25)
 
 Where:
-  avg_reward  = running average of task-outcome signal for this skill
-  N           = total tasks attempted in this session
+  avg_reward  = running mean of the session-rating reward for this skill
+  N           = total sessions so far (total_sessions)
   uses        = lifetime use count for this skill
 ```
 
-High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight gets soft-attenuated but never permanently dropped. Even a low-signal skill gets explored once in a while. The bonus is capped at 0.25. Uncapped, it keeps growing with the session count: past about 55 sessions a never-used skill's bonus alone is larger than the whole 0-to-1 reward range, so untried skills outrank every skill with a real track record, and using a skill well makes it rank lower.
+High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight ends up with a low average and is retrieved less, but the loop never drops it. Even a low-signal skill gets explored once in a while. The bonus is capped at 0.25. Uncapped, it keeps growing with the session count: past about 55 sessions a never-used skill's bonus alone is larger than the whole 0-to-1 reward range, so untried skills outrank every skill with a real track record, and using a skill well makes it rank lower.
 
-### Sigmoid gate
+### Why there is no trust gate
 
-When feedback arrives at the end of a session, how much to update a skill depends on the outcome delta:
+Earlier versions of this page described a sigmoid gate that scaled each skill's update. Nothing ever read it, and the ranking uses only `avg_reward`, `uses` and the session count. The running mean is the whole update:
 
 ```
-g = σ(5 · Δ)     where σ is the logistic function, Δ = outcome - prior_expectation
-
-Δ > 0  → g → 0.92  → near-full reinforcement (skill genuinely helped)
-Δ = 0  → g = 0.50  → moderate signal (skill was neutral)
-Δ < 0  → g → 0.08  → soft attenuation (skill was off, but not erased)
+endorsed skill:    reward = rating / 5
+attenuated skill:  reward = (rating - 1) / 5
+avg_reward = (avg_reward * (uses - 1) + reward) / uses     # uses already incremented
 ```
 
-The gate converts binary feedback into a gradient signal. Even wrong-direction skills contribute information rather than getting hard-deleted.
+Reward is capped at `rating / 5`, so after a session rated 3 or lower, every skill that got feedback and was averaging above 0.6 goes down, endorsed ones included.
 
 ## Skill activation
 

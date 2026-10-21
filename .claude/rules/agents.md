@@ -113,6 +113,8 @@ Use evals as the core engineering loop: establish baseline → tweak architectur
 
 **Grader types:** Always combine deterministic graders (count-based, regex, schema checks) with LLM-as-judge (rubric-based). Unanchored rubrics compress to a meaningless 2.8-4.4 range even on obviously poor output, the judge has nothing to compare against. Minimum: 2 anchor examples (score 0 example + max-score example). Evals are living artifacts: when human judgment disagrees with the grader score, fix the grader before acting on the score, the definition of "good" may have been wrong, not the output.
 
+**Every new checker ships with a control that fails.** A check that has only ever been seen passing is an untested branch, and on a verifier that is worse than no check, because its green now carries weight. Before you rely on a new check, commit one of these next to it: a mutation that puts the defect back and makes the check fail, naming that specific check; or a fixture for the false-positive case, an input that looks like a failure and is not. A test with only a broken case and a clean case can pass against a broken checker.
+
 **QA loop instruction:** Tell the critic agent adversarially, "Assume there are problems. Your job is to find them." This is stronger than "check for issues."
 
 **Judge output order:** Reasoning before score, never score first. An LLM anchored on a number will rationalize it even when wrong.

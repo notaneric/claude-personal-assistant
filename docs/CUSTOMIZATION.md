@@ -80,7 +80,7 @@ Key parameters in `sdar/skill_bank.json`:
 | `ucb_score` | computed | `avg_reward + min(0.5 * sqrt(ln(N+1)/(uses+1)), 0.25)` |
 | `domains` | `[]` | Which task domains this skill applies to |
 
-To bias toward a skill from day one (you know it's good): set `avg_reward` to 0.7-0.8.
+To bias toward a skill from day one (you know it's good): set `avg_reward` to 0.7-0.8 **and** `uses` to 3 or so. With `uses` at 0, the first rating replaces the seed entirely.
 To bring an unused skill into rotation, invoke it directly; its use count and your rating then feed its score. The exploration bonus is capped at 0.25, so editing `avg_reward` by hand is the wrong lever.
 
 Run `/reflect` periodically to get an automated audit of which skills are underperforming and should be tuned or removed.

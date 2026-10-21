@@ -14,7 +14,7 @@ Code-based personal AI agent named **Eric**. It packages:
 
 - A structured CLAUDE.md operating manual with a skill activation matrix
 - A self-improvement framework (SDAR) that gets better every session via UCB retrieval
-  and a sigmoid gate
+  and a running-mean reward update
 - Modular skill files you can drop into any Claude Code project
 - Agent orchestration patterns and a hooks system
 - A curated slash-command set and a sanitization pipeline so the repo stays safe to publish
@@ -40,9 +40,9 @@ not invocation-dependent) transfers regardless of which skills you have installe
 
 **Option C, Adopt the SDAR self-improvement loop**
 Copy `sdar/skill_bank.template.json` and `sdar/README.md`. Wire up `/learn` and
-`/reflect` commands from `.claude/commands/`. The UCB formula and sigmoid gate are
-model-agnostic; the template ships with neutral priors (uses: 0, avg_reward: 0.5) so
-you start from a blank slate.
+`/reflect` commands from `.claude/commands/`. The UCB formula and the running-mean
+update are model-agnostic; the template ships with neutral priors (uses: 0,
+avg_reward: 0.5) so you start from a blank slate.
 
 **Option D, Adopt the hooks system**
 Review `.claude/settings.example.json`. The hook patterns (PreToolUse gate for
@@ -88,7 +88,7 @@ skills/
   # last30days  → https://github.com/mvanhorn/last30days-skill
 
 sdar/
-  README.md                  Full SDAR algorithm + sigmoid gate explainer
+  README.md                  Full SDAR algorithm + running-mean update explainer
   skill_bank.template.json   Neutral-prior skill bank (uses:0, avg_reward:0.5)
 
 scripts/

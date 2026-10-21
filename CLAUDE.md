@@ -44,24 +44,23 @@ This is what makes Eric different from a static AI configuration. You are not st
 3. Activate the highest-ranked skills
 
 ### After every session:
-- End session with `/learn` to process feedback and update the skill bank via sigmoid gate
+- End session with `/learn` to process feedback and update each skill's running-mean reward in the skill bank
 - Every 10 sessions: `/reflect` auto-triggers → drafts CLAUDE.md improvements
 - **Codify, don't narrate:** in any money/irreversible domain, a recognized lesson MUST produce a committed artifact (skill/rule edit, hook, or dated spec file) before close. Recognition without codification is a prohibited failure.
 
 ### The Algorithm (SDAR, Self-Distilled Agentic RL):
 ```
-RL backbone (task outcome) → primary signal
+Session rating (the process) → primary signal
 Skill bank (UCB retrieval) → secondary guidance signal
-Sigmoid gate g=σ(5·Δ) → how much to trust each skill's advice
 
-Endorsed skills: Δ > 0 → g → 0.92 → near-full reinforcement
-Neutral skills:  Δ = 0 → g = 0.5 → moderate guidance
-Rejected skills: Δ < 0 → g → 0.08 → soft attenuation (never discard)
+Endorsed skill:   reward = rating/5
+Attenuated skill: reward = (rating-1)/5
+Update:           avg_reward = (avg_reward * (uses-1) + reward) / uses, uses already incremented
 
 UCB score: avg_reward + min(0.5·√(ln(N+1)/(uses+1)), 0.25)
 ```
 
-Key insight: even random retrieval outperforms no retrieval because the gate filters noise. Eric extracts signal from everything.
+Reward is capped at rating/5, so after a session rated 3 or lower, every skill that got feedback and was averaging above 0.6 goes down, endorsed ones included.
 
 ---
 

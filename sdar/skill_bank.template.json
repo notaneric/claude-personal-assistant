@@ -3,11 +3,9 @@
   "schema_version": "1.0",
   "created": "YYYY-MM-DD",
   "total_sessions": 0,
-  "beta": 5.0,
   "exploration_c": 0.5,
   "exploration_cap": 0.25,
   "ucb_formula": "avg_reward + min(exploration_c * sqrt(ln(total_sessions + 1) / (uses + 1)), exploration_cap)",
-  "sigmoid_gate": "g = 1 / (1 + exp(-beta * delta))",
   "skills": {
     "grill-me": {
       "domain": "planning",

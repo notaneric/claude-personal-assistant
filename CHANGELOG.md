@@ -7,7 +7,25 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+
+- Model routing names the current models (Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1) and tells you to set tiers by alias (`opus`, `sonnet`, `haiku`, `fable`), so the next release does not leave you pinned to an old model. `.claude/settings.example.json` now uses `"model": "opus"` (it pinned `claude-opus-4-8`). Reflection and CLAUDE.md rewrites moved from Fable to Opus at `max` effort.
+- The 5.5 models default to `medium` effort in Claude Code. `.claude/rules/performance.md` now says so, and explains how to save a default (`effortLevel`, `modelSettings`) and that `max` can only be set per session or by environment variable.
+- `/learn` asks for a rating of the process rather than the outcome, scores what reached you rather than what a check caught first, and gives anchors for each score. It also describes an optional self-assessed mode for when you trust the assistant to rate itself.
+
+### Added
+
+- `.claude/rules/performance.md`: an `ANTHROPIC_API_KEY` in your environment makes Claude Code bill at API rates instead of your Pro or Max subscription, including in `claude -p`. Use a different variable name for keys your own scripts use.
+- `.claude/rules/agents.md`: every new checker ships with a control that fails.
+- `.claude/rules/security.md`: a gate that allows everything when its data is missing must say so at session start.
+
 ### Fixed
+
+- CI failed on every push since v0.1.0. The `ANTHROPIC_BASE_URL` check flagged every mention of the variable, including its own step and the deny rule that blocks it. It now flags only an assignment to a URL, and carries a control that must match. The next step, which never ran because of that failure, read `|` in its patterns as "or" and would have flagged the deny list too; it now checks the hook commands in settings files, which is what can actually run.
+- `scripts/action_gate.py`: a relative entry in `PROTECTED_PATHS` (`.env`, `secrets/`) never matched, because Claude Code sends absolute paths. It now matches that name anywhere. The example settings wired the gate to `Bash|Write` only, so edits went unchecked; the matcher now includes `Edit`, `MultiEdit` and `NotebookEdit`. `PROTECTED_PATHS` ships empty, and the session recap now says so at session start instead of letting an empty gate look like a working one.
+- `.claude/settings.example.json` sets `"effortLevel": "xhigh"`, the default the rules recommend; without it Claude Code runs the 5.5 models at `medium`.
+- Two uncited "SDAR paper" claims are gone, and the docs now call the rating a rating of the process, matching `/learn`.
+- The docs described a "sigmoid trust gate" that weighted each skill's advice. Nothing ever read it: the ranking uses only the average reward, the use count and the session count. The claim is gone from 10 files. `/learn`, `CLAUDE.md`, `sdar/README.md` and the `skill-bank` skill now state the real update (endorsed: rating/5; underperforming: (rating-1)/5; a running mean), and the unused `sigmoid_gate` and `beta` keys are removed from the skill-bank template. The same files described a 0.1-rate moving average that contradicted the running mean; that is corrected too.
 
 - The SSH and AWS write blocks did not work in current Claude Code. `.claude/settings.example.json` and `.claude/rules/security.md` listed `Write(~/.ssh/**)` and `Write(~/.aws/**)`, and a `Write(...)` deny rule matches nothing, so both folders stayed writable. They are now `Edit(...)` rules, which cover every file-editing tool. **If you copied the old example into your own `settings.json`, make the same change there.** Recent Claude Code versions print a startup warning for a `Write(path)` rule they will not consult. Deny rules cover Claude Code's own file tools only; a script that opens the file itself is not checked (see the note in `.claude/rules/security.md`).
 - `/security-audit self` checked for the broken `Write(...)` spelling and would have passed it. It now expects `Edit(...)` and fails any `Write(...)` deny rule.

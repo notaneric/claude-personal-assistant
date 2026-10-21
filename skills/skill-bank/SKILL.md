@@ -3,7 +3,7 @@ name: skill-bank
 description: |
   The SDAR self-improvement framework. Maintains a UCB-scored skill bank, retrieves
   the highest-scoring skills for each task domain, and updates scores after each
-  session based on outcome quality.
+  session based on the session's process rating.
 
   USE-FOR: Session initialization (retrieve relevant skills), skill activation routing,
   post-session score updates, periodic reflection on which skills are underperforming
@@ -32,23 +32,20 @@ allowed-tools:
 SDAR (Self-Distilled Agentic RL) is a self-improvement loop for Claude Code agents.
 The agent maintains a JSON skill bank tracking how well each skill performed on past
 tasks. Before each session, it retrieves the highest-scoring skills for the current
-domain. After each session, it updates scores based on outcome quality. Over time,
+domain. After each session, it updates scores from the session's process rating. Over time,
 the agent gets measurably better at routing.
 
-**Key finding from the research basis:** Even random skill retrieval outperforms no
-retrieval, because the sigmoid gate filters low-quality advice before it influences
-behavior. Signal is extracted even from imperfect skill recommendations.
+This skill does not filter low-quality advice. A bad rating just lowers a skill's running mean.
 
 ## The Algorithm
 
 ```
 RL backbone (task outcome)     → primary signal
 Skill bank (UCB retrieval)     → secondary guidance signal
-Sigmoid gate g = σ(5 · Δ)     → how much to trust each skill's advice
 
-Endorsed skills: Δ > 0  →  g → 0.92  (near-full reinforcement)
-Neutral skills:  Δ = 0  →  g = 0.50  (moderate guidance)
-Rejected skills: Δ < 0  →  g → 0.08  (soft attenuation, never discard)
+Endorsed skill:    reward = rating / 5
+Attenuated skill:  reward = (rating - 1) / 5
+Update:            avg_reward = (avg_reward * (uses - 1) + reward) / uses   (uses already incremented)
 
 UCB score: avg_reward + min(0.5 · √(ln(N + 1) / (uses + 1)), 0.25)
 ```
@@ -56,6 +53,13 @@ UCB score: avg_reward + min(0.5 · √(ln(N + 1) / (uses + 1)), 0.25)
 The UCB formula balances exploitation (use high-scoring skills) with exploration
 (try underused skills that might be good). Skills with 0 uses get a bonus, capped at 0.25,
 so an untried skill competes with proven ones without automatically outranking them.
+
+### Why there is no trust gate
+
+Earlier versions of this skill described a sigmoid gate that weighted each skill's advice.
+Nothing ever read it, so the running mean above is the whole update. Reward is capped at
+`rating / 5`, so after a session rated 3 or lower, every skill that got feedback and was
+averaging above 0.6 goes down, endorsed ones included.
 
 ## Skill Bank Schema
 
@@ -76,7 +80,7 @@ The skill bank lives at `sdar/skill_bank.json`. Each entry:
 
 Fields:
 - `uses`, total times this skill was retrieved and applied
-- `avg_reward`, running average of outcome quality (0-1) when this skill was active
+- `avg_reward`, running mean of rewards (0-1) from the sessions where this skill got feedback
 - `ucb_score`, computed score used for retrieval ranking (recomputed after each update)
 - `last_used`, ISO timestamp of last activation (used for staleness flagging)
 - `session_history`, last N outcomes for trend analysis (keep ≤10 entries)
@@ -93,19 +97,20 @@ The template (`sdar/skill_bank.template.json`) ships with `uses: 0` and
 4. Activate those skills, load their SKILL.md files for guidance
 
 ### During the session (apply)
-Apply the retrieved skills as guidance, not as rigid rules. The sigmoid gate means
-skill advice is weighted, not mandatory. If a retrieved skill's recommendation doesn't
-fit the current situation, note the mismatch, it's data for the post-session update.
+Apply the retrieved skills as guidance, not as rigid rules. Nothing forces a skill's
+advice on the session: if a retrieved skill's recommendation doesn't fit the current
+situation, note the mismatch, it's data for the post-session update.
 
 ### After each session (update)
-1. Rate the outcome quality for each skill that was active (0.0-1.0)
-2. Compute Δ = outcome_quality − avg_reward
-3. Compute new avg_reward = old_avg_reward + (Δ × learning_rate) (learning_rate = 0.1)
+1. Set the reward for each skill that got feedback, using the session rating (out of 5):
+   `rating / 5` if endorsed, `(rating - 1) / 5` if attenuated
+2. Increment `uses`
+3. Compute new avg_reward = (old_avg_reward * (uses - 1) + reward) / uses
 4. Recompute UCB score with updated uses and avg_reward (exploration bonus capped at 0.25)
 5. Write back to `sdar/skill_bank.json`
 
-The learning rate of 0.1 means scores shift gradually, not abruptly. A single bad
-session won't tank a skill's score; a consistent pattern of bad sessions will.
+Each session moves the average by (reward - old_avg_reward) / uses, so a skill with many
+uses barely shifts after one bad session, while a pattern of bad sessions pulls it down.
 
 ### Every 10 sessions (reflect)
 Run a reflection pass that:

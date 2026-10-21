@@ -40,8 +40,8 @@ SLASH COMMANDS AVAILABLE
   /automate /grill      /security-audit
 
 SELF-IMPROVEMENT CYCLE
-  Algorithm:  SDAR (sigmoid gate + UCB retrieval)
-  Gate:       g = σ(5·Δ), asymmetric trust
+  Algorithm:  SDAR (running-mean update + UCB retrieval)
+  Update:     reward = rating/5, or (rating-1)/5 if attenuated; avg_reward is the running mean
   Formula:    UCB = avg_reward + min(0.5·sqrt(ln(N+1)/(uses+1)), 0.25)
   Status:     [active / needs /learn to prime]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

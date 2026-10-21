@@ -1,6 +1,7 @@
 {
   "_comment": "Copy this file to settings.json and customize. Replace all <PLACEHOLDER> values.",
-  "model": "claude-opus-4-8",
+  "model": "opus",
+  "effortLevel": "xhigh",
   "permissions": {
     "deny": [
       "Read(~/.ssh/**)",
@@ -45,7 +46,7 @@
     "PreToolUse": [
       {
         "_comment": "Example: gate any irreversible/money action. Exit code 2 blocks the tool call and sends feedback to the assistant.",
-        "matcher": "Bash|Write",
+        "matcher": "Bash|Write|Edit|MultiEdit|NotebookEdit",
         "hooks": [
           {
             "type": "command",

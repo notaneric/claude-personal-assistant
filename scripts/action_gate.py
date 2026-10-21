@@ -23,7 +23,10 @@ How it works:
   Exit 2  → BLOCK the call; stderr is returned to Claude as feedback.
   Exit 1  → hard error (treated as allow by Claude Code, use sparingly).
 
-Customize the PROTECTED_PATHS and BLOCKED_PATTERNS lists below.
+Customize the PROTECTED_PATHS and BLOCKED_PATTERNS lists below. PROTECTED_PATHS ships EMPTY, so
+until you fill it no file path is protected; scripts/session_recap.py says so at session start.
+A relative entry (".env", "secrets/") matches that name anywhere, because the tools send
+absolute paths.
 """
 
 import json
@@ -88,6 +91,12 @@ def is_protected_path(path_str: str) -> bool:
         p = protected.replace("\\", "/").lower()
         if path_str == p or path_str.startswith(p.rstrip("/") + "/"):
             return True
+        # A relative entry matches that name anywhere: the tools send absolute paths, so the
+        # exact-or-prefix test above can never fire on ".env" or "secrets/" by itself.
+        if not p.startswith("/") and ":" not in p:
+            rel = p.rstrip("/")
+            if path_str.endswith("/" + rel) or ("/" + rel + "/") in path_str:
+                return True
     return False
 
 

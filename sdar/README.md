@@ -28,9 +28,9 @@ update mechanism that runs entirely in-context, no external training required.
                    ▼
 ┌──────────────────────────────────────────────────────┐
 │  /learn  (end of session)                            │
-│  5. Collect outcome signal (0.0, 1.0)               │
-│  6. Sigmoid gate: g = σ(5 · Δ)                       │
-│  7. Update avg_reward for each activated skill       │
+│  5. Collect the process rating (1 to 5)             │
+│  6. Reward = rating/5, or (rating-1)/5 if attenuated │
+│  7. Update avg_reward as a running mean over uses    │
 │  8. Recompute UCB scores                             │
 │  9. Append endorsed/attenuated patterns              │
 │  10. Write updated skill_bank.json                   │
@@ -58,30 +58,30 @@ ucb_score = avg_reward + min( exploration_c * sqrt( ln(total_sessions + 1) / (us
 | `total_sessions` | top-level | Session counter; grows with each `/learn` call |
 | `uses` | per-skill | How many times this skill was activated |
 
-A skill with `uses: 0` starts with a high UCB score (the `ln(1) / 1` term is large relative to a
-well-used skill), so new skills get tried before being judged.
+A skill with `uses: 0` starts at its seeded `avg_reward` of 0.5 and earns the full 0.25
+exploration bonus from the first session on, so it can outrank a weak well-used skill and gets
+tried before being judged. The update never deletes a skill:
+a low score just means it gets retrieved less often, and it stays available for tasks where it
+might still apply.
 
-**Key insight from the SDAR paper:** even random retrieval outperforms no retrieval, because the
-sigmoid gate filters noise. Eric extracts signal from everything.
+Nothing in this loop filters noise. A bad rating just lowers a skill's running mean.
 
 ---
 
-## Sigmoid gate
+## Why there is no trust gate
 
-When `/learn` runs, the gate decides how strongly to reinforce each activated skill:
+Earlier versions of this page described a sigmoid gate that was meant to weight how much each
+skill's advice counted. Nothing ever read it: `ucb_score` depends only on `avg_reward`, `uses`
+and `total_sessions`. The running mean is the whole update:
 
 ```
-g = σ(5 · Δ)     where Δ = outcome_reward − avg_reward
+endorsed skill:    reward = rating / 5
+attenuated skill:  reward = (rating - 1) / 5
+avg_reward = (avg_reward * (uses - 1) + reward) / uses     # uses already incremented
 ```
 
-| Δ | g (gate weight) | Effect |
-|---|---|---|
-| > 0 (skill helped) | → 0.92 | Near-full reinforcement, endorse the patterns that fired |
-| = 0 (neutral) | = 0.50 | Moderate update, keep the skill, no strong signal |
-| < 0 (skill hurt) | → 0.08 | Soft attenuation, deprioritize, never discard |
-
-Skills are never deleted. A low UCB score just means they get retrieved less often. They stay
-available for tasks where they might still apply.
+Reward is capped at `rating / 5`, so after a session rated 3 or lower, every skill that got
+feedback and was averaging above 0.6 goes down, endorsed ones included.
 
 ---
 
@@ -92,7 +92,6 @@ available for tasks where they might still apply.
   "schema_version": "1.0",
   "created": "YYYY-MM-DD",
   "total_sessions": 0,
-  "beta": 5.0,
   "exploration_c": 0.5,
   "exploration_cap": 0.25,
   "skills": {
@@ -120,7 +119,7 @@ available for tasks where they might still apply.
 | `task_types` | string[] | Specific task patterns this skill covers |
 | `uses` | int | Lifetime activation count |
 | `successes` | int | Times this skill contributed to a positive outcome |
-| `avg_reward` | float 0-1 | Exponential moving average of outcome rewards |
+| `avg_reward` | float 0-1 | Running mean of rewards: `rating/5` if endorsed, `(rating-1)/5` if attenuated |
 | `ucb_score` | float | Recomputed each session; drives retrieval order |
 | `endorsed_patterns` | string[] | Specific approaches that have worked; injected as hints |
 | `attenuated_patterns` | string[] | Approaches that have backfired; injected as warnings |
@@ -135,10 +134,10 @@ available for tasks where they might still apply.
 
 Runs at the end of every session. Eric:
 
-1. Asks for an outcome rating (or infers from task completion)
-2. Computes `Δ` per activated skill
-3. Applies the sigmoid gate
-4. Updates `avg_reward`, `ucb_score`, `endorsed_patterns`, `attenuated_patterns`
+1. Asks for a rating of the session's process (or, in self-assessed mode, reads the session for your corrections)
+2. Turns the rating (out of 5) into a reward per skill: `rating/5` if endorsed, `(rating-1)/5` if attenuated
+3. Folds that reward into `avg_reward` as a running mean
+4. Updates `ucb_score`, `endorsed_patterns`, `attenuated_patterns`
 5. Increments `total_sessions`
 
 Call it: `/learn`

@@ -141,6 +141,19 @@ def read_notes(root: Path) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+def protected_paths_empty(gate: Path) -> bool:
+    """True when action_gate.py ships its PROTECTED_PATHS list with no live entry.
+
+    A gate that allows everything when its list is empty must say so (rules/security.md,
+    Gates That Fail Open). Comment lines inside the list do not count as entries."""
+    import re
+    m = re.search(r"PROTECTED_PATHS[^=]*=\s*\[(.*?)\]", gate.read_text(encoding="utf-8"), re.S)
+    if not m:
+        return False
+    live = [ln for ln in m.group(1).splitlines() if ln.strip() and not ln.strip().startswith("#")]
+    return not live
+
+
 def main() -> None:
     root = repo_root()
     branch = git_branch()
@@ -165,6 +178,9 @@ def main() -> None:
         for note in notes:
             lines.append(f"  - {note}")
 
+    gate = root / "scripts" / "action_gate.py"
+    if gate.exists() and protected_paths_empty(gate):
+        lines.append("gate   : action_gate.py PROTECTED_PATHS is empty, so no file path is protected yet")
     lines.append("--- end recap ---")
     print("\n".join(lines))
 
