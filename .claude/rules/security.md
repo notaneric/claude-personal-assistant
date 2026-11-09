@@ -94,4 +94,6 @@ A guard that allows everything when its data is missing (a protected-names list,
 
 - **CVE-2025-59536** (CVSS 8.7): Project hooks executed before trust dialog, patched in CC 1.0.111+
 - **CVE-2026-21852**: `ANTHROPIC_BASE_URL` override leaks API key, patched in CC 2.0.65+
-- Both exploited via poisoned project config files in `.claude/`, treat all cloned repos as untrusted until you have read the hooks and settings yourself
+- **CVE-2026-40068** (CVSS 7.7): a repository's git worktree `commondir` file could point at a folder you had already trusted, skipping the trust dialog and running its `.claude/settings.json` hooks, patched in CC 2.1.84+ (GHSA-q5hj-mxqh-vv77)
+- **CVE-2026-46406**: `/copy` wrote responses to a fixed temp path with no symlink protection, so another local user could read them or redirect the write, patched in CC 2.1.128+ (GHSA-4vp2-6q8c-pvq2)
+- The first three are exploited through a poisoned repository (its `.claude/` config or its git metadata): treat every cloned repo as untrusted until you have read its hooks and settings yourself

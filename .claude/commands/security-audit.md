@@ -72,9 +72,8 @@ When `/security-audit self` is invoked, check each item and report PASS / FAIL /
 - Confirm a secrets manager (e.g., a CLI secrets manager / .env) is the retrieval method for any API keys in use
 - Confirm no `.env` files exist in project root
 
-**CVE Awareness**:
-- CVE-2025-59536 (Claude Code 1.0.111+ patches hooks-before-trust-dialog)
-- CVE-2026-21852 (Claude Code 2.0.65+ patches ANTHROPIC_BASE_URL key leak)
+**CVE Status** (the list lives in the **CVE Reference** section of `.claude/rules/security.md`; do not copy it here, a copy goes stale):
+- For each CVE listed there, compare its patched version with `claude --version` and report PASS / FAIL
 
 **Skill Bank Attribution**:
 - Every session log entry must have `session_id`, `timestamp`, `agent` fields

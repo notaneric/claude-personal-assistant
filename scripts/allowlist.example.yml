@@ -132,6 +132,20 @@ files:
   - path: ".claude/commands/security-audit.md"
     publish: true
 
+  # Optional progress tracker mod, listed by folder so the engine-generated
+  # .claude-plugin/types/ (machine-specific, rewritten at load) never publishes
+  - path: ".claude/mods/progress-eta/.claude-plugin/plugin.json"
+    publish: true
+
+  - path: ".claude/mods/progress-eta/hooks/**"
+    publish: true
+
+  - path: ".claude/mods/progress-eta/tests/**"
+    publish: true
+
+  - path: ".claude/mods/progress-eta/types/**"
+    publish: true
+
   # SDAR self-improvement system
   - path: "sdar/skill_bank.template.json"
     publish: true

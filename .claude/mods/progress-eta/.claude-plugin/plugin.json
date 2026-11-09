@@ -1,0 +1,6 @@
+{
+  "name": "progress-eta",
+  "version": "0.1.0",
+  "description": "Live progress and time left for running agents, workflows, background commands and the main reply, in a side panel and the status line.",
+  "types": "./types/index.d.ts"
+}

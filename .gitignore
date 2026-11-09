@@ -92,6 +92,9 @@ desktop.ini
 logs/
 *.pid
 
+# Progress tracker mod: the engine writes generated types here at every load
+.claude/mods/*/.claude-plugin/types/
+
 # Test artifacts
 coverage/
 .nyc_output/

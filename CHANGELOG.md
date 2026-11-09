@@ -15,12 +15,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- `.claude/mods/progress-eta/`: an optional Claude Code mod. A panel and a status line show each running agent, workflow, background command and the main reply, with elapsed time and estimated time left; agents are asked to report their steps through a `progress` tool. Install it by setting `CLAUDE_CODE_PLUGIN_DIRS` to the mod folder in your user `~/.claude/settings.json` (project settings are never read for it), then start a new session and type `/progress`. Needs a Claude Code build with function-hook mods (tested on 2.1.318). It adds a step-reporting note to every agent prompt and one paragraph to the system prompt; `docs/CUSTOMIZATION.md` lists everything it changes.
+- `.claude/rules/performance.md`: never set `ANTHROPIC_MODEL` in the VS Code `claudeCode.environmentVariables` setting; it outranks every settings file on that machine only, so two machines drift apart.
 - `.claude/rules/performance.md`: an `ANTHROPIC_API_KEY` in your environment makes Claude Code bill at API rates instead of your Pro or Max subscription, including in `claude -p`. Use a different variable name for keys your own scripts use.
 - `.claude/rules/agents.md`: every new checker ships with a control that fails.
 - `.claude/rules/security.md`: a gate that allows everything when its data is missing must say so at session start.
 
 ### Fixed
 
+- `/reflect` said untried skills sit at 1.0; with the capped exploration bonus they sit at 0.75. `/automate` showed a `gws gmail send` form that does not exist; it now uses the real `gws` helpers (`gmail +send`, `sheets +append`, `calendar +insert`) and a real `drive files list` call. `/security-audit` no longer carries its own copy of the CVE list, which went stale; it reads `.claude/rules/security.md` and compares each patched version with `claude --version`. That list gains two newer advisories, CVE-2026-40068 and CVE-2026-46406.
 - CI failed on every push since v0.1.0. The `ANTHROPIC_BASE_URL` check flagged every mention of the variable, including its own step and the deny rule that blocks it. It now flags only an assignment to a URL, and carries a control that must match. The next step, which never ran because of that failure, read `|` in its patterns as "or" and would have flagged the deny list too; it now checks the hook commands in settings files, which is what can actually run.
 - `scripts/action_gate.py`: a relative entry in `PROTECTED_PATHS` (`.env`, `secrets/`) never matched, because Claude Code sends absolute paths. It now matches that name anywhere. The example settings wired the gate to `Bash|Write` only, so edits went unchecked; the matcher now includes `Edit`, `MultiEdit` and `NotebookEdit`. `PROTECTED_PATHS` ships empty, and the session recap now says so at session start instead of letting an empty gate look like a working one.
 - `.claude/settings.example.json` sets `"effortLevel": "xhigh"`, the default the rules recommend; without it Claude Code runs the 5.5 models at `medium`.

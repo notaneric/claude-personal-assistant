@@ -32,7 +32,7 @@ Analyze accumulated session data to identify what's working, what isn't, and dra
 5. Draft CLAUDE.md updates:
    - **Skill Activation Matrix** rows to add/update/remove
    - **Operating rules** that need adjustment
-   - **New capability** rows based on untested skills with high UCB (still at 1.0)
+   - **New capability** rows based on untested skills with high UCB (untried arms sit at 0.75: the 0.5 seed plus the 0.25 bonus cap)
    - Note: only draft, never auto-apply
 
 6. Present draft to the user:

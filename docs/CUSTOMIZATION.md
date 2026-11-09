@@ -115,6 +115,36 @@ Custom slash commands live in `.claude/commands/*.md`. Each file is one command.
 
 Command files are plain Markdown. They can reference skills, call other commands, or define a multi-step workflow.
 
+## Progress tracker mod (optional)
+
+`.claude/mods/progress-eta/` is a Claude Code mod. It adds a panel beside the chat and a status line that list every running agent, workflow, background command and the main reply, each with elapsed time and an estimate of the time left. Agents are asked to report their steps through a `progress` tool, which is what makes the estimate more than a guess.
+
+It needs a Claude Code build that supports function-hook mods. It was tested on 2.1.318.
+
+To install it:
+
+1. Add `CLAUDE_CODE_PLUGIN_DIRS` to the `env` block of your **user** settings file, `~/.claude/settings.json` (create the block if it is missing), set to the absolute path of the `progress-eta` folder:
+   ```json
+   "env": {
+     "CLAUDE_CODE_PLUGIN_DIRS": "/absolute/path/to/your-fork/.claude/mods/progress-eta"
+   }
+   ```
+   - To load more than one plugin folder this way, join the paths with `;` on Windows or `:` elsewhere.
+   - On Windows, write the path with forward slashes (`C:/...`). A single backslash is not valid JSON.
+   - Claude Code never reads this variable from project settings, so it does not belong in `.claude/settings.example.json` or a project `settings.json`.
+2. Start a new session and type `/progress`.
+
+What it changes, in every session on the machine, because the variable lives in user settings:
+
+- It appends a short note to the prompt of every new subagent, workflow agents included, asking it to report its steps. It also adds one paragraph to the main system prompt asking the same of long replies.
+- It registers the `progress` tool, so that tool's definition goes out with every request.
+- It answers its own `progress` tool before permission checks and PreToolUse hooks run, so deny rules and settings hooks never see those calls. That tool only updates the tracker. Every other tool call passes through unchanged, and a call your hooks refuse stays refused.
+- It keeps a short record of each finished run, the newest 300, in the plugin's own store, to improve later estimates.
+
+It makes no file, process, model or network calls. After each `git pull`, run `claude plugin validate` on the folder: its `calls:` line lists every engine call the mod makes, so a new `$.fs`, `$.process` or `$.model` there means the code now reaches further. Then run `claude plugin test` on it.
+
+When an interactive session loads the folder, Claude Code writes generated type files into its `.claude-plugin/types/`. `.gitignore` already excludes them.
+
 ## Keeping your fork in sync
 
 When you pull updates from upstream:

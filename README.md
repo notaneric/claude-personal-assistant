@@ -30,6 +30,7 @@ Eric is a full Claude Code setup, not a chatbot in a trench coat. You get the op
 | `sdar/` | The self-improvement loop: UCB skill retrieval, a running-mean reward update, and a skill-bank template |
 | `scripts/` | The publish pipeline. Sanitize your private fork, generate the public mirror, refuse to push if it finds a leak |
 | `scripts/guards/` | Bash hooks that block three command shapes that fail without an error, plus a mutation harness you can point at a check to prove it can fail |
+| `.claude/mods/progress-eta/` | An optional Claude Code mod: a panel and status line showing each running agent, workflow, background command and the main reply, with elapsed time and estimated time left. Setup, and what it changes in every session, is in `docs/CUSTOMIZATION.md` |
 | `AGENTS.md` | A capability menu other tools can read (Cursor, Windsurf, anything that speaks `AGENTS.md`) |
 | `llms.txt` | The machine-readable index, so an LLM can find what's here without reading every file |
 | `docs/` | Setup, customization, and how the thing is put together |

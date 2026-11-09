@@ -24,6 +24,8 @@ Route by task complexity. Never over-provision unless reasoning depth is demonst
 - Hard tasks can run many minutes per turn, and Fable uses more of your plan's capacity per task than Opus. Check your plan's terms before making it a habit.
 - Subagents inherit the session model. If Fable is the session model, pin every worker to `haiku` or `sonnet`.
 
+**Set the model in one place.** Never put `ANTHROPIC_MODEL` in the VS Code `claudeCode.environmentVariables` setting: it outranks every settings file, on that machine only, so if you sync `settings.json` between machines they quietly run different models.
+
 **API keys and subscriptions:** if `ANTHROPIC_API_KEY` is set in the environment, Claude Code uses it instead of your Pro or Max login and bills at API rates, including in `claude -p`. Give a key meant for your own scripts a different variable name, and pass it to the SDK explicitly.
 
 **Recommended agent session mapping:**

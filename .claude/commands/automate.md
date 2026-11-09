@@ -43,10 +43,10 @@ Support: excel-mcp (for data handling)
 3. **Google Workspace CLI** (for G Suite operations):
    ```bash
    # Examples
-   gws drive list --folder "Reports"
-   gws gmail send --to "recipient@example.com" --subject "Weekly Report" --body report.md
-   gws sheets update --id [spreadsheet_id] --range "A1:Z100" --data output.csv
-   gws calendar create --title "Sprint Review" --start "2026-06-01T10:00" --duration 60
+   gws drive files list --params '{"pageSize": 10}'
+   gws gmail +send --to someone@example.com --subject "Weekly report" --body "$(cat report.txt)"
+   gws sheets +append --spreadsheet [spreadsheet_id] --json-values '[["2026-06-01", "42"]]'
+   gws calendar +insert --summary "Sprint Review" --start 2026-06-01T10:00:00Z --end 2026-06-01T11:00:00Z
    ```
 
 4. **Output:**

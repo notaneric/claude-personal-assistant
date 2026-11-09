@@ -121,3 +121,9 @@ sync gate. Defines which paths and tokens are safe to publish.
 [scripts/guards/README.md](scripts/guards/README.md), Bash PreToolUse hooks that block command
 shapes that fail without an error (a piped exit code, a doubled backslash in a heredoc,
 backticks inside a double-quoted interpreter argument), with tests and a mutation harness.
+
+## Mods
+
+[.claude/mods/progress-eta/](.claude/mods/progress-eta/), Optional Claude Code mod: a panel and a status
+line listing each running agent, workflow, background command and the main reply, with elapsed time and
+estimated time left. Setup, and what it changes in every session: docs/CUSTOMIZATION.md.

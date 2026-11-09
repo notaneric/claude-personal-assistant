@@ -71,6 +71,8 @@ LICENSE                      MIT
     performance.md           Model tier routing + context discipline + effort levels
     agents.md                Multi-agent orchestration patterns + subagent design
   settings.example.json      Hooks, permissions, MCP config (sanitized template)
+  mods/
+    progress-eta/            Optional mod: panel and status line with time left for running work
 
 skills/
   grill-me/SKILL.md              Adversarial stress-test for plans before building
