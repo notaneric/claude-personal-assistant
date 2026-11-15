@@ -15,7 +15,7 @@ sdar/skill_bank.json       ← per-skill UCB scores (tuned by the SDAR loop)
 .claude/settings.json      ← hooks + tool permissions (deterministic enforcement)
 ```
 
-Claude Code loads `CLAUDE.md` at startup, minus any block-level HTML comments, which it strips first. Rules and skills load on-demand, rules when referenced, skills when the activation matrix matches the current prompt context. Hooks fire regardless of model output.
+Claude Code loads `CLAUDE.md` at startup, minus any block-level HTML comments, which it strips first. Every file in `.claude/rules/` without `paths` frontmatter loads at startup too, so it costs context on every prompt; a rule with `paths` loads only when Claude works with a matching file. Skills load on demand, when the activation matrix matches the current prompt context. Hooks fire regardless of model output.
 
 ## Context hierarchy
 

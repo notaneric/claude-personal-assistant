@@ -4,7 +4,7 @@ description: "Print the assistant's current state: session history, top skills b
 
 # /status: Current State Dashboard
 
-Print Eric's complete current state: skill bank, knowledge vault, installed plugins, session history.
+Print Eric's current state: session history, the top skills by UCB score, skill domains, the knowledge vault and the self-improvement settings.
 
 ## Output Format
 

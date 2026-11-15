@@ -155,8 +155,9 @@ Call it: `/reflect`
 
 ### `/status`
 
-Prints the current skill bank state in a readable table, UCB scores, use counts, top endorsed
-patterns, and any skills that have gone unused for 30+ sessions (deletion candidates).
+Prints a dashboard: the session count and next reflection, the top 10 skills by UCB score with
+their use counts and average reward, skill domains, knowledge-vault stats, and the update
+formula. It does not list unused skills; check for those when you run `/reflect`.
 
 Call it: `/status`
 

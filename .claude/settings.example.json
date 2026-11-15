@@ -2,6 +2,9 @@
   "_comment": "Copy this file to settings.json and customize. Replace all <PLACEHOLDER> values.",
   "model": "opus",
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-opus-5-5": { "effortLevel": "xhigh" }
+  },
   "permissions": {
     "deny": [
       "Read(~/.ssh/**)",

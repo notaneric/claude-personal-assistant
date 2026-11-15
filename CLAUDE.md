@@ -90,10 +90,10 @@ Evaluate every prompt against this table automatically, do not wait to be asked.
 | PDF operations | pdf-tools | |
 | Knowledge graph, vault | graphify | obsidian-cli |
 | Complex plan (any significant design/arch) | grill-me (stress-test first) | |
-| Agent or loop failing / drifting | agent-introspection | |
-| Eval-driven development, regression checks | eval-harness | agentic-engineering |
-| Autonomous loop setup (sequential/DAG) | autonomous-loops | massgen |
-| Agentic task decomposition + model routing | agentic-engineering | eval-harness |
+| Agent or loop failing / drifting | a general-purpose agent given only the failing output and the steps that reproduce it | |
+| Eval-driven development, regression checks | Eval Loop Pattern (`.claude/rules/agents.md`) | verification-before-done |
+| Autonomous loop setup (sequential/DAG) | `/loop` or `/schedule`, plus the Brain/Hands rules (`.claude/rules/agents.md`) | massgen |
+| Agentic task decomposition + model routing | `Plan` agent + the routing tables in `.claude/rules/performance.md` | Eval Loop Pattern |
 | Session improvement | `/learn` → `/reflect` | |
 | New capability needed | skill-creator | |
 | Multi-model routing / external offload | litellm | ollama (local) |
@@ -127,7 +127,7 @@ Organizational principles this repo is built on (drawn from Claude Code best pra
 6. **Memory over repetition.** What YOUR_NAME told Eric once lives in memory. Don't ask for repeated context.
 7. **Skill bank review.** Before any complex task, check what Eric already knows about similar tasks from past sessions.
 8. **Code wins.** For architectural debates, generate prototype PRs and compare impact. Three attempts beats one written debate.
-9. **CLAUDE.md is loaded on every prompt.** Every line consumes context; Anthropic's memory docs suggest under 200 lines per file, and an `@` import does not reduce the cost. This file starts longer than that, so cut the matrix rows and commands you will not use. Task-specific knowledge belongs in skills (loaded on-demand). Keep this file to always-needed constraints only. Notes for maintainers, such as why a rule exists, can go in a block-level HTML comment (one whose `<!--` starts a line): Claude Code strips those before the file reaches the model, so they cost no context.
+9. **CLAUDE.md and the rules files load on every prompt.** Every line consumes context, including each file in `.claude/rules/` without `paths` frontmatter, since those load at launch with this one. Anthropic's memory docs suggest under 200 lines per CLAUDE.md, and an `@` import does not reduce the cost. This file and the three rules files start at over 700 lines together (agents.md alone is over 200), so cut the matrix rows, commands and rules you will not use, or give a rule `paths` frontmatter so it loads only for matching files. Task-specific knowledge belongs in skills (loaded on-demand). Keep this file to always-needed constraints only. Notes for maintainers, such as why a rule exists, can go in a block-level HTML comment (one whose `<!--` starts a line): Claude Code strips those before the file reaches the model, so they cost no context.
 10. **Process audit.** Periodically kill rules that no longer serve their purpose. Eric has permission to propose removing outdated operating rules.
 
 ---
