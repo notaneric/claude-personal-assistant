@@ -53,7 +53,9 @@ PROTECTED_PATHS: list[str] = [
 PROTECTED_BRANCHES: list[str] = ["main", "master", "production", "release"]
 
 # Shell patterns that are blocked regardless of context.
-# Each entry is a regex matched against the full command string.
+# Each entry is a regex matched against the full command string of every tool that runs a
+# command (Bash, PowerShell, Monitor). They are written for bash: add PowerShell forms
+# (`iwr ... | iex`, `Remove-Item -Recurse`) if you use that tool.
 BLOCKED_SHELL_PATTERNS: list[str] = [
     # Pipe-to-shell attacks (curl/wget piped to sh/bash)
     r"curl\s+.*\|\s*(ba)?sh",
@@ -101,7 +103,7 @@ def is_protected_path(path_str: str) -> bool:
 
 
 def check_bash(tool_input: dict) -> None:
-    """Gate checks for Bash tool calls."""
+    """Gate checks for tools that run a command: Bash, PowerShell and Monitor."""
     command = tool_input.get("command", "")
 
     # Shell pattern blocklist
@@ -146,11 +148,25 @@ def check_edit(tool_input: dict) -> None:
         )
 
 
-# Map tool names to their specific checker functions.
+def check_notebook(tool_input: dict) -> None:
+    """Gate checks for NotebookEdit tool calls, which name their file notebook_path."""
+    notebook_path = tool_input.get("notebook_path", "")
+    if is_protected_path(notebook_path):
+        block(
+            f"NotebookEdit to protected path '{notebook_path}' is not allowed.\n"
+            "Edit PROTECTED_PATHS in scripts/action_gate.py to adjust this list."
+        )
+
+
+# Map tool names to their specific checker functions. Keep this set and the PreToolUse
+# matcher in .claude/settings.example.json the same: a tool missing here is allowed silently.
 TOOL_CHECKERS = {
     "Bash": check_bash,
+    "PowerShell": check_bash,
+    "Monitor": check_bash,
     "Write": check_write,
     "Edit": check_edit,
+    "NotebookEdit": check_notebook,
 }
 
 

@@ -24,7 +24,7 @@ Eric is a full Claude Code setup, not a chatbot in a trench coat. You get the op
 | Layer | What it is |
 |---|---|
 | `CLAUDE.md` | The operating manual. Identity, rules, skill routing, context discipline, how it talks |
-| `.claude/rules/` | Modular policy files (security, performance, agent orchestration). A rule without `paths` frontmatter loads at launch with `CLAUDE.md`; one with `paths` loads when Claude reads a matching file |
+| `.claude/rules/` | Modular policy files (security, performance, agent orchestration). A rule without `paths` frontmatter loads at launch with `CLAUDE.md`; a path-scoped rule loads when Claude uses the Read, Write, or Edit tool on a matching file |
 | `.claude/commands/` | Slash commands for research, writing, design, grilling a plan, and self-improvement |
 | `skills/` | Capability modules. YAML frontmatter, least-privilege tools, and a preamble that keeps them from hijacking a host agent |
 | `sdar/` | The self-improvement loop: UCB skill retrieval, a running-mean reward update, and a skill-bank template |

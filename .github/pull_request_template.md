@@ -34,7 +34,7 @@
 
 ### CI
 - [ ] Local injection-safety check passed (`bash scripts/check-injection.sh`)
-- [ ] No hidden unicode characters introduced (`rg -nP '[\x{200B}-\x{200D}\x{FEFF}\x{202A}-\x{202E}]'` returns clean)
+- [ ] No hidden unicode characters introduced (`rg -nP '[\x{200B}-\x{200D}\x{FEFF}\x{202A}-\x{202E}]' --hidden --no-ignore --glob '!.git' .` returns clean, with the same flags CI uses)
 
 ## Testing
 
