@@ -24,7 +24,7 @@ Eric is a full Claude Code setup, not a chatbot in a trench coat. You get the op
 | Layer | What it is |
 |---|---|
 | `CLAUDE.md` | The operating manual. Identity, rules, skill routing, context discipline, how it talks |
-| `.claude/rules/` | Modular policy files (security, performance, agent orchestration). They load when they're relevant, not before |
+| `.claude/rules/` | Modular policy files (security, performance, agent orchestration). A rule without `paths` frontmatter loads at launch with `CLAUDE.md`; one with `paths` loads when Claude reads a matching file |
 | `.claude/commands/` | Slash commands for research, writing, design, grilling a plan, and self-improvement |
 | `skills/` | Capability modules. YAML frontmatter, least-privilege tools, and a preamble that keeps them from hijacking a host agent |
 | `sdar/` | The self-improvement loop: UCB skill retrieval, a running-mean reward update, and a skill-bank template |
@@ -168,7 +168,7 @@ The repo is built to be pasted into an agent's context without wrecking it. Ever
 
 Three ways to consume it:
 
-**Claude Code, the main path.** Clone or template it, open in Claude Code. `CLAUDE.md` is the entry point and loads on every prompt. The rules in `.claude/rules/` load by topic. Skills in `skills/` fire on context.
+**Claude Code, the main path.** Clone or template it, open in Claude Code. `CLAUDE.md` is the entry point and loads on every prompt. The rules in `.claude/rules/` load at launch too, unless a rule's `paths` frontmatter limits it to matching files. Skills in `skills/` fire on context.
 
 **Another agent (Cursor, Windsurf, whatever).** Point it at `AGENTS.md`, which is a capability menu written for cross-tool reading. Or hand it `llms.txt` as the index.
 

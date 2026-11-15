@@ -79,7 +79,7 @@ When `/security-audit self` is invoked, check each item and report PASS / FAIL /
 **CVE Status** (the list lives in the **CVE Reference** section of `.claude/rules/security.md`; do not copy it here, a copy goes stale):
 - For each CVE listed there, compare its patched version with `claude --version` and report PASS / FAIL
 - Do the same for the minimum version that section names for fixes shipped without an advisory: a build can pass every CVE check and still be below it
-- Report the update channel too. On `stable`, `claude update` can stop below that minimum, so FAIL the version check there even when the update reports success
+- Judge PASS / FAIL on the installed version alone. Report the update channel as advice: on `stable`, an update or reinstall can move below that minimum, so WARN when `minimumVersion` is not set to it
 
 **Skill Bank Attribution**:
 - Every session log entry must have `session_id`, `timestamp`, `agent` fields

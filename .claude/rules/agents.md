@@ -213,7 +213,8 @@ Read a zero in that state as a value. `limit = state.get("limit") or DEFAULT` ha
 import json, sys, pathlib
 
 tool = json.load(sys.stdin)
-if tool.get("tool_name") not in {"Bash", "Write", "Edit", "MultiEdit", "NotebookEdit"}:
+# Tools that run commands or write files. MCP tools (mcp__*) are not covered: add yours if they can act.
+if tool.get("tool_name") not in {"Bash", "PowerShell", "Monitor", "Write", "Edit", "NotebookEdit"}:
     sys.exit(0)
 
 state = pathlib.Path(".agent/gate-state.json")

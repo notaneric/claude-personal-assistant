@@ -15,7 +15,7 @@ sdar/skill_bank.json       ← per-skill UCB scores (tuned by the SDAR loop)
 .claude/settings.json      ← hooks + tool permissions (deterministic enforcement)
 ```
 
-Claude Code loads `CLAUDE.md` at startup, minus any block-level HTML comments, which it strips first. Every file in `.claude/rules/` without `paths` frontmatter loads at startup too, so it costs context on every prompt; a rule with `paths` loads only when Claude works with a matching file. Skills load on demand, when the activation matrix matches the current prompt context. Hooks fire regardless of model output.
+Claude Code loads `CLAUDE.md` at startup, minus any block-level HTML comments, which it strips first. Every file in `.claude/rules/` without `paths` frontmatter loads at startup too, so it costs context on every prompt; a rule with `paths` loads when Claude reads a matching file. An `@` import saves nothing either: the imported file loads at launch with the file that imports it. Skills load on demand, when the activation matrix matches the current prompt context. Hooks fire regardless of model output.
 
 ## Context hierarchy
 
@@ -24,7 +24,7 @@ Claude Code loads `CLAUDE.md` at startup, minus any block-level HTML comments, w
     ↓
 <project>/CLAUDE.md         (project-level, applies in this workspace)
     ↓
-<project>/.claude/rules/*.md  (modular, imported by reference)
+<project>/.claude/rules/*.md  (modular; load at launch unless `paths` scopes them)
 ```
 
 Project-level settings override user-level where they conflict. Destructive overrides (dropping security rules, widening tool permissions beyond the deny list) require explicit justification in the settings file.
