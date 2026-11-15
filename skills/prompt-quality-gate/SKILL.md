@@ -45,6 +45,15 @@ Examples: "produce a report", "write some copy", "analyze this", "help with X"
 400-word product description in the voice of a technical founder, following the
 attached example" is executable. "Write copy" is not.
 
+### Unnamed consumer
+**Signal:** The brief names an artifact but not who reads it or what decision it serves.
+Briefs that are clear on everything else miss this too: "make a one-pager on the new
+pricing" says what to build, not whether it goes to customers, to the sales team, or to
+whoever approves the price.  
+**Fix:** Before the first line, write one sentence: "After reading this, [reader] will
+[verb] [object]." If you cannot fill it in, ask. A wrong guess about the reader often
+forces a rebuild.
+
 ### Conflicting instructions
 **Signal:** Two instructions that cannot both be satisfied simultaneously.  
 Examples: "make it detailed but keep it brief", "comprehensive summary",

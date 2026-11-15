@@ -1,3 +1,7 @@
+---
+description: "Design pipeline: taste filter, a direction drawn from the brief, the build, then screenshot checks. Use for any UI or visual work."
+---
+
 # /design [brief]: Full Design Pipeline
 
 Execute the complete design pipeline: taste filter → design language → HTML/CSS implementation. Every project gets its own aesthetic derived from the brief, not a house default.

@@ -1,3 +1,7 @@
+---
+description: "Adversarial stress test of a plan, idea or design, in rounds of hard questions. Use before building anything significant."
+---
+
 # /grill [plan or idea]: Adversarial Stress-Testing
 
 Systematically stress-test any plan, idea, design, or architecture through relentless questioning. Uses the grill-me skill pattern. The goal: find every weakness before committing to build.

@@ -1,3 +1,7 @@
+---
+description: "End-of-session update: rate the process, then update each skill's average reward in the skill bank. Run at every session close."
+---
+
 # /learn: Self-Improvement Feedback Loop
 
 Process this session's feedback and update Eric's skill bank with the SDAR running-mean update.

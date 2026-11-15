@@ -6,22 +6,24 @@ Route by task complexity. Never over-provision unless reasoning depth is demonst
 
 **Name tiers by alias** (`opus`, `sonnet`, `haiku`, `fable`) in `settings.json` and in agent or skill frontmatter. Claude Code resolves each alias to the current model, so a new release never leaves you pinned to an old one. Use a full model ID only where a script must stay on one version.
 
-| Tier (alias) | Current model (October 2026) | Use For |
+| Tier (alias) | Current model (November 2026) | Use For |
 |---|---|---|
 | Haiku (`haiku`) | Haiku 5.5, `claude-haiku-5-5` | Classification, boilerplate transforms, narrow single-file edits, worker agents in parallel swarms |
 | Sonnet (`sonnet`) | Sonnet 5.5, `claude-sonnet-5-5` | Implementation, multi-file refactors, content generation, orchestrating multi-agent workflows |
 | Opus (`opus`) | Opus 5.5, `claude-opus-5-5` | The main session. Architecture decisions, root-cause analysis, multi-file invariants, deep research, CLAUDE.md rewrites, `/reflect`, anything involving money or an irreversible step |
-| Fable (`fable`) | Fable 5.1, `claude-fable-5-1` | Deliberate escalation only: the longest autonomous runs, or a task where Opus at `max` effort demonstrably stalls |
+| Fable (`fable`) | Fable 5.2, `claude-fable-5-2` | Deliberate escalation only: the longest autonomous runs, or a task where Opus at `max` effort demonstrably stalls |
 
 **Escalation rule:** Only escalate model tier when a lower tier fails with a clear reasoning gap, not because the task "feels hard." Track per-task: model used, token estimate, success/failure.
 
 **Small model ceiling:** Low effort on Opus outperforms Haiku at max effort for intelligence-demanding tasks. Use Haiku only for non-intelligence-bound tasks: classification, summarization, extraction, or when low time-to-first-token is the constraint.
 
-**Set effort explicitly on the 5.5 models.** In Claude Code, Opus 5.5, Sonnet 5.5 and Haiku 5.5 default to `medium` effort (Opus 5 defaulted to `high`). Save your default with `effortLevel` in `settings.json`, or per model under `modelSettings`. `max` cannot be saved in settings: use `/effort max` for the session, or the `CLAUDE_CODE_EFFORT_LEVEL` environment variable.
+**Set effort explicitly on the current models.** In Claude Code, Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.2 default to `medium` effort (Opus 5 defaulted to `high`). Save your default with `effortLevel` in `settings.json`, or per model under `modelSettings`. `max` cannot be saved in settings: use `/effort max` for the session, or the `CLAUDE_CODE_EFFORT_LEVEL` environment variable.
 
 **Fable notes:**
+- Fable 5.2 shipped on 2026-11-09 with a 1M-token context. On the API it costs $8 per million input tokens and $40 per million output. The older Fable 5.1 costs more ($10 and $50), so move any script that pins `claude-fable-5-1`.
 - Thinking is always on and cannot be disabled; effort is the only control.
-- Hard tasks can run many minutes per turn, and Fable uses more of your plan's capacity per task than Opus. Check your plan's terms before making it a habit.
+- Anthropic's launch benchmarks put Fable 5.2 ahead of Opus 5.5 (FrontierSWE v2: 69.9% against 62.3%; FrontierCode 2.0: 49.1% against 45.5%) and say Fable 5.2 at `high` effort matches Opus 5.5 at `max` for about half the API cost per task. Those are the vendor's numbers, not your evals: run a few of your own tasks on both before you move work to Fable.
+- Plan limits are a separate question from API price. On Max, Fable draws on the same weekly limit as your other models, and it may use up to 50% of that limit; past the cap it runs on usage credits. Anthropic's own pages disagree about Pro (help-center article 15424964 says usage credits only, the Fable 5.2 announcement says up to 50% of the weekly limit), so check your plan's terms before making it a habit. Hard tasks can also run many minutes per turn.
 - Subagents inherit the session model. If Fable is the session model, pin every worker to `haiku` or `sonnet`.
 
 **Set the model in one place.** Never put `ANTHROPIC_MODEL` in the VS Code `claudeCode.environmentVariables` setting: it outranks every settings file, on that machine only, so if you sync `settings.json` between machines they quietly run different models.
@@ -31,6 +33,7 @@ Route by task complexity. Never over-provision unless reasoning depth is demonst
 **Recommended agent session mapping:**
 - **Main interactive session** → `opus` (the best model reads your prompt and decomposes)
 - **Subagents by task:** `haiku` for classification/extraction, `sonnet` for implementation, `opus` for deep research/security/architecture
+- **Workers with no obvious tier** → `sonnet`. Reviews (critique, security, code review) stay on `opus`. A subagent runs on the session model unless its frontmatter pins one, so an unpinned worker in an Opus session runs on Opus
 - **CLAUDE.md rewrites / `/reflect`** → `opus` at `max` effort (run `/effort max` first: a command cannot raise the session's effort itself)
 
 ## External-Model Offload Lane

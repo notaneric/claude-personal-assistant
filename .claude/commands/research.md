@@ -1,3 +1,7 @@
+---
+description: "Deep research in several iterations: knowledge vault first, then the web, ending in a cited report. Use for any substantive question."
+---
+
 # /research [topic]: Deep Iterative Research Agent
 
 Run a multi-iteration research pipeline on any topic. Synthesizes web sources, your knowledge vault, and structured analysis into a cited report.

@@ -1,3 +1,7 @@
+---
+description: "Draft copy that reads as written by a person, then run the humanizer pass over it. Use for any written content."
+---
+
 # /write [topic or brief]: Humanized Content Pipeline
 
 Produce written content that sounds like a real person wrote it, not an AI. Apply the humanizer + marketing-skills pipeline.

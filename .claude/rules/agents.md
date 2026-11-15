@@ -25,17 +25,17 @@ Only two cases justify a subagent. All other subagents should be collapsed back 
 
 ## Delegation Triggers
 
-Invoke a specialized sub-agent immediately (no permission needed) when:
+Invoke a specialized sub-agent immediately (no permission needed) when one of these fires. This template ships no custom agents in `.claude/agents/`, so every row names something Claude Code or this file already provides. A row that names an agent or skill you do not have routes nowhere, so swap in your own only once you add them.
 
 | Trigger | Sub-agent |
 |---|---|
-| Complex multi-file feature | planner → then implement |
-| Code written / modified | code-reviewer (if quality matters) |
-| Security-sensitive code | security-reviewer (before committing) |
-| Architectural decision | architect |
-| Bug fix with unclear root cause | agent-introspection-debugging |
-| Autonomous loop setup | autonomous-loops skill |
-| Eval / regression check | eval-harness skill |
+| Complex multi-file feature | `Plan` agent → then implement |
+| Code written / modified | `/code-review`, or a general-purpose agent given the Critique prompt below (if quality matters) |
+| Security-sensitive code | `/security-review` (before committing) |
+| Architectural decision | `Plan` agent on `opus` |
+| Bug fix with unclear root cause | a general-purpose agent given only the failing output and the steps that reproduce it |
+| Autonomous loop setup | `/loop` or `/schedule`, plus the Brain/Hands rules below |
+| Eval / regression check | the Eval Loop Pattern below |
 
 ## Subagent Design Principles
 
@@ -183,7 +183,7 @@ Explicit tiers, write to the RIGHT tier, don't blur them:
 - **Working memory (`.agent/`):** `skill_bank.json`, session logs, pending changes. Survives sessions. Maintained by `/learn` and `/reflect`.
 - **Long-term (knowledge vault):** Research outputs, reference material, permanent knowledge. Updated via `/graphify`. Queried before any web research.
 
-**Index file pattern:** `memory-index.md`, slug-based index over working memory. Reading an index to find what to look for is faster than grepping. Maintained by `/reflect`. Dreaming runs out-of-band from the agent loop (never during active task execution, separate `/reflect` pass). Memory staleness: `/reflect` flags `skill_bank.json` entries with 0 uses in the last 30+ days as deletion candidates.
+**Index file pattern:** keep one index over memory, one line per entry, with the detail in topic files. Reading an index to find what to look for is faster than grepping. Claude Code's auto memory already works this way: its `MEMORY.md` is the index, and only its first 200 lines or first 25KB (whichever comes first) load at session start, so a long index loses its tail. If you keep an index of your own, name the command that updates it. Nothing in this template maintains one, and an index nothing maintains goes stale without any error. Dreaming runs out-of-band from the agent loop (never during active task execution, separate `/reflect` pass). Memory staleness: `skill_bank.json` entries with 0 uses in the last 30+ days are deletion candidates; check for them when you run `/reflect`, because no command lists them yet.
 
 ## Hooks Reference
 
@@ -203,6 +203,8 @@ Hooks are deterministic, they always execute regardless of what Claude decides. 
 
 Key the gate on objective, machine-written state (a state file, a counter, an approval record), NOT on the agent's own generated text (e.g., a keyword the agent writes that triggers the gate). The agent will simply stop writing the keyword once it becomes a kill-switch.
 
+Read a zero in that state as a value. `limit = state.get("limit") or DEFAULT` hands back the default when the limit is `0`, so a budget closed to zero quietly reopens. Test for the missing key instead (`DEFAULT if state.get("limit") is None else state["limit"]`), and give the gate two test cases: a limit of `0` must block, and an absent limit must still get the default.
+
 **Example: irreversible-action gate pattern**
 
 ```python
@@ -211,7 +213,7 @@ Key the gate on objective, machine-written state (a state file, a counter, an ap
 import json, sys, pathlib
 
 tool = json.load(sys.stdin)
-if tool.get("tool") not in {"Bash", "Write"}:
+if tool.get("tool_name") not in {"Bash", "Write"}:
     sys.exit(0)
 
 state = pathlib.Path(".agent/gate-state.json")

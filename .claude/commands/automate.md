@@ -1,3 +1,7 @@
+---
+description: "Build an automation, from a one-off script to a recurring workflow, with n8n and the Google Workspace CLI. Use when asked to automate a task."
+---
+
 # /automate [task description]: Workflow Automation
 
 Build automation workflows using n8n and Google Workspace CLI. From one-time scripts to recurring automated pipelines.

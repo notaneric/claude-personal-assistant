@@ -1,3 +1,7 @@
+---
+description: "Defensive security analysis: code audits, threat models, and a self-audit of this repo's deny list, hooks and Claude Code version."
+---
+
 # /security-audit [target]: Security Analysis & Threat Modeling
 
 Structured security analysis for code audits, threat modeling, and defensive security work. Mapped to five frameworks across 26 domains.
@@ -74,6 +78,7 @@ When `/security-audit self` is invoked, check each item and report PASS / FAIL /
 
 **CVE Status** (the list lives in the **CVE Reference** section of `.claude/rules/security.md`; do not copy it here, a copy goes stale):
 - For each CVE listed there, compare its patched version with `claude --version` and report PASS / FAIL
+- Do the same for the minimum version that section names for fixes shipped without an advisory: a build can pass every CVE check and still be below it
 
 **Skill Bank Attribution**:
 - Every session log entry must have `session_id`, `timestamp`, `agent` fields

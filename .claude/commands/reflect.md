@@ -1,3 +1,7 @@
+---
+description: "Find patterns across session logs and skill scores, then draft CLAUDE.md changes for your approval. Run every 10 sessions or on demand."
+---
+
 # /reflect: Pattern Analysis & CLAUDE.md Evolution
 
 Analyze accumulated session data to identify what's working, what isn't, and draft improvements to Eric's operating manual.

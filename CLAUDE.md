@@ -127,7 +127,7 @@ Organizational principles this repo is built on (drawn from Claude Code best pra
 6. **Memory over repetition.** What YOUR_NAME told Eric once lives in memory. Don't ask for repeated context.
 7. **Skill bank review.** Before any complex task, check what Eric already knows about similar tasks from past sessions.
 8. **Code wins.** For architectural debates, generate prototype PRs and compare impact. Three attempts beats one written debate.
-9. **CLAUDE.md is loaded verbatim on every prompt.** Every line consumes context. Task-specific knowledge belongs in skills (loaded on-demand). Keep this file to always-needed constraints only.
+9. **CLAUDE.md is loaded on every prompt.** Every line consumes context; Anthropic's memory docs suggest under 200 lines per file, and an `@` import does not reduce the cost. This file starts longer than that, so cut the matrix rows and commands you will not use. Task-specific knowledge belongs in skills (loaded on-demand). Keep this file to always-needed constraints only. Notes for maintainers, such as why a rule exists, can go in a block-level HTML comment (one whose `<!--` starts a line): Claude Code strips those before the file reaches the model, so they cost no context.
 10. **Process audit.** Periodically kill rules that no longer serve their purpose. Eric has permission to propose removing outdated operating rules.
 
 ---
@@ -173,6 +173,7 @@ Fire before executing any prompt with these problems. Name the issue, propose a 
 | Issue | Signal | Fix |
 |---|---|---|
 | Vague task | "produce a report", "write some copy" | Specify exact output: count, format, example |
+| Unnamed consumer | The brief names an artifact but not who reads it or what decision it serves, even when it is otherwise clear | Before the first line, write "After reading this, [reader] will [verb] [object]." If you cannot fill it in, ask |
 | Conflicting instructions | "detailed summary", "comprehensive but brief" | Pick one direction, they cancel each other out |
 | No output format | Novel or complex output requested | Add structure: JSON schema, numbered list, char limit |
 | Verbose/redundant | Same instruction repeated 2+ ways | Compress to highest-density version, fewer tokens = better accuracy |

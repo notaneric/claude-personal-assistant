@@ -115,6 +115,18 @@ Custom slash commands live in `.claude/commands/*.md`. Each file is one command.
 
 Command files are plain Markdown. They can reference skills, call other commands, or define a multi-step workflow.
 
+Start each one with a one-line `description` in YAML frontmatter, saying what the command does and when to use it:
+
+```markdown
+---
+description: "Turn meeting notes into a task list with owners and dates. Use after any meeting."
+---
+
+# /my-command [notes]: Notes to Tasks
+```
+
+Claude Code shows the description in the `/` menu and in the command list the model reads. Without one it falls back to the file's first line, which is usually just the heading. Every command in `.claude/commands/` carries one.
+
 ## Progress tracker mod (optional)
 
 `.claude/mods/progress-eta/` is a Claude Code mod. It adds a panel beside the chat and a status line that list every running agent, workflow, background command and the main reply, each with elapsed time and an estimate of the time left. Agents are asked to report their steps through a `progress` tool, which is what makes the estimate more than a guess.
