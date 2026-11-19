@@ -44,10 +44,12 @@ import sys
 # `--include=*.py -e`), nor `-t ` / `--type ` (`rg -t py -e "`). The bare launcher `py`/`pyw`
 # counts only in command position (start, after ; && || | ( $( newline, sudo/time/exec, or env
 # assignments), so `rg -T py -e "` and `fd -e py -e "` are not flagged.
-# Not covered: other flags that take a separate value (e.g. node --loader x), a value that
-# itself starts with a dash, an attached argument (python -c"..."), perl -E, node -p and
-# node --eval, and the py launcher after if, !, {, env or nohup. Known false positives:
-# rg -T perl -e "..." (also ruby or python) and docker run --name node -it -e "...".
+# Not covered: other flags that take a separate value (e.g. node --loader x), an attached
+# argument (python -c"..."), perl -E, node -p and node --eval, and the py launcher after
+# if, !, {, do, then, else, env, nohup, sudo -u or time -p, or after more than eight
+# assignments or one whose value holds $(, quotes or &. Known false positives:
+# rg -T perl -e "..." (also ruby or python), rg --type-not python -e "..." and
+# docker run --name node -it -e "...".
 def _build_opener():
     guard = r"(?<![\w.=-])(?<!-t )(?<!--type )"
     exe = r"(?:\.[Ee][Xx][Ee])?[\x22\x27]?(?=\s)"
