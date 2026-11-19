@@ -52,8 +52,9 @@ UCB score: avg_reward + min(0.5 · √(ln(N + 1) / (uses + 1)), 0.25)
 
 The UCB formula balances exploitation (a high running mean) with exploration (a bonus for
 skills with few uses). Skills with 0 uses get a bonus, capped at 0.25, so an untried skill
-scores close to proven ones without automatically outranking them. The score only orders the
-banner's top 5 and the `/status` list; it does not choose which skill runs.
+scores close to proven ones without automatically outranking them. The score orders the
+banner's top 5 and the `/status` list, and `/reflect` drafts routing-row proposals from it for
+your approval; it does not choose which skill runs.
 
 ### Why there is no trust gate
 
@@ -73,7 +74,7 @@ The skill bank lives at `sdar/skill_bank.json`. Each entry:
   "description": "Adversarial plan stress-test",
   "uses": 0,
   "avg_reward": 0.5,
-  "ucb_score": 0.85,
+  "ucb_score": 0.75,
   "last_used": null,
   "session_history": []
 }
@@ -161,8 +162,8 @@ A skill with 0 uses in 30+ days is a candidate for removal or replacement. But r
 conservatively, low use may mean the domain came up less, not that the skill is bad.
 Check: did the domain come up? If yes and the skill was bypassed, that's signal.
 
-Never hard-remove a skill with avg_reward > 0.6, even if unused. The UCB formula
-will rank it lower in the banner's list, but nothing deletes it; route to it from the
+Never hard-remove a skill with avg_reward > 0.6, even if unused. A skill that goes unused
+keeps its score (the exploration bonus shrinks only as uses grow), and nothing deletes it; route to it from the
 activation matrix when the domain recurs.
 
 ## Concurrency Note

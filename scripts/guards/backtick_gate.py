@@ -32,19 +32,44 @@ import re
 import sys
 
 # python -c " / python3 -c " / pythonw -c " / py -3 -c " / node -e " / perl -e " / ruby -e ",
-# with interpreter flags between the name and -c/-e: python -I -c ", python3 -X utf8 -c ",
-# python.exe -E -c ", py -3.12 -c ", perl -0777 -e ", node --input-type=module -e ". A flag is a
-# dash token; a separate value is accepted only after the flags that take one (-X, -W, -r,
-# --require), so `python -m pytest -c "` and `python -u deploy.py -e "` are not interpreter
-# one-liners. A bundled final flag ending in c/e (python -Ic ", perl -ne ", node -pe ") counts too.
+# also .exe names and quoted paths ("C:/Program Files/nodejs/node.exe" -e "), with interpreter
+# flags between the name and -c/-e: python -I -c ", python3 -X utf8 -c ", py -3.12 -c ",
+# perl -0777 -e ", node --input-type=module -e ". A flag is a dash token. A flag that takes a
+# value may be followed by one separate value token, per interpreter: python -X/-W (also as the
+# last letter of a bundle, `python -IX utf8 -c`), perl -I/-M (`perl -I lib -e`), ruby -I/-r,
+# node -r, --require, --import, --input-type. Any other flag followed by a bare word is not
+# an interpreter one-liner (`python -m pytest -c "`, `python -u deploy.py -e "`). A bundled
+# final flag ending in c/e (python -Ic ", perl -ne ", node -pe ") counts too. Up to 16 flags.
 # The name must not follow a word char, dot, dash or `=` (that is `tool.py -c`, `./build.py -e`,
-# `--include=*.py -e`), nor `-t ` / `--type ` (`rg -t py -e "`).
-# Not covered: a bundled flag in the MIDDLE that takes a value, e.g. `python -XIc`.
-OPENER = re.compile(
-    r"(?<![\w.=-])(?<!-t )(?<!--type )"
-    r"(?:pythonw?[0-9.]*(?:\.exe)?|py|node|perl|ruby)(?=\s)"
-    r"(?:\s+(?:-[XW]|-r|--require)\s+[^\s-]\S*|\s+--?[A-Za-z0-9][\w.:-]*(?:=\S+)?)*?"
-    r"\s+-(?:c|e|[A-Za-z]*[ce])\s+\"")
+# `--include=*.py -e`), nor `-t ` / `--type ` (`rg -t py -e "`). The bare launcher `py`/`pyw`
+# counts only in command position (start, after ; && || | ( $( newline, sudo/time/exec, or env
+# assignments), so `rg -T py -e "` and `fd -e py -e "` are not flagged.
+# Not covered: other flags that take a separate value (e.g. node --loader x), and a value that
+# itself starts with a dash.
+def _build_opener():
+    guard = r"(?<![\w.=-])(?<!-t )(?<!--type )"
+    exe = r"(?:\.[Ee][Xx][Ee])?[\x22\x27]?(?=\s)"
+    plain = r"\s+--?[A-Za-z0-9][\w.:-]*(?:=\S+)?"
+    tail = r"\s+-(?:c|e|[A-Za-z]*[ce])\s+\""
+
+    def flags(letters, longs=""):
+        valued = r"\s+(?:-[A-Za-z0-9]*[" + letters + "]"
+        if longs:
+            valued += "|" + longs
+        valued += r")\s+[^\s-]\S*"
+        return r"(?:" + valued + "|" + plain + r"){0,16}?"
+
+    py = guard + r"pythonw?[0-9.]*" + exe + flags("XW") + tail
+    node = guard + "node" + exe + flags("r", r"--(?:require|import|input-type)") + tail
+    perl = guard + "perl" + exe + flags("IM") + tail
+    ruby = guard + "ruby" + exe + flags("Ir") + tail
+    cmdpos = r"(?:^|[;&|(\n]|\$\()\s*(?:(?:sudo|time|exec|\w+=\S*)\s+)*"
+    launcher = (cmdpos + r"[\x22\x27]?(?:[\w:.\\/-]*[/\\])?(?<![\w.=-])pyw?"
+                + exe + flags("XW") + tail)
+    return re.compile("|".join("(?:" + p + ")" for p in (py, node, perl, ruby, launcher)))
+
+
+OPENER = _build_opener()
 
 
 def _double_quoted_span(cmd, start):

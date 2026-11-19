@@ -180,6 +180,7 @@ skills in the banner's list so early results don't crowd them out.
 
 SDAR does not fine-tune the model. The only thing it changes is the skill bank file: scores,
 `endorsed_patterns` and `attenuated_patterns`. The SessionStart banner shows the top five scores,
+the recap hook injects the recent-sessions digest,
 and `/reflect` reads the bank when it drafts `CLAUDE.md` changes. Nothing loads a skill's
 `SKILL.md` because its score is high; a skill loads when the Activation Matrix routes to it. The
 underlying model is unchanged.

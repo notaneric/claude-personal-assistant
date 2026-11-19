@@ -105,4 +105,4 @@ ucb_score = avg_reward + min(0.5 * sqrt(ln(total_sessions + 1) / (uses + 1)), 0.
 
 ## Why there is no trust gate
 
-Earlier versions of this command had a sigmoid gate step, and nothing ever read its output. `ucb_score` uses only `avg_reward`, `uses` and `total_sessions`, so the running mean in steps 3 and 4 is the whole update. Reward is capped at `rating/5`, so after a session rated 3 or lower, every skill that got feedback and was averaging above 0.6 goes down, endorsed ones included. A low average only means a skill is retrieved less often, and the update never removes one.
+Earlier versions of this command had a sigmoid gate step, and nothing ever read its output. `ucb_score` uses only `avg_reward`, `uses` and `total_sessions`, so the running mean in steps 3 and 4 is the whole update. Reward is capped at `rating/5`, so after a session rated 3 or lower, every skill that got feedback and was averaging above 0.6 goes down, endorsed ones included. A low average only lowers that skill's score, which orders the banner's top 5 and the `/reflect` leaderboard, and the update never removes one.

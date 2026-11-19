@@ -56,6 +56,13 @@ MUST_BLOCK = [
      'bundled -ne'),
     ('node -pe "\'`ls`\'"',
      'bundled -pe'),
+    ('python -IX utf8 -c "print(\'`ls`\')"', 'bundled flags ending in X, separate value'),
+    ('perl -I lib -e "print \'`ls`\'"', 'perl -I with a separate value'),
+    ('node --input-type module -e "console.log(\'`x`\')"', 'node --input-type with a separate value'),
+    ('py.exe -3 -c "print(\'`ls`\')"', 'py.exe launcher'),
+    ('node.exe -e "console.log(\'`x`\')"', 'node.exe'),
+    ('perl.exe -e "print \'`ls`\'"', 'perl.exe'),
+    ('"C:/Program Files/nodejs/node.exe" -e "console.log(\'`x`\')"', 'quoted node.exe path'),
 ]
 
 MUST_PASS = [
@@ -87,6 +94,8 @@ MUST_PASS = [
      '-m takes a module, then pytest -c'),
     ('python -u deploy.py -e "prod `x`"',
      'script argument named -e'),
+    ('rg -T py -e "see `x`"', 'rg -T py is not the py launcher'),
+    ('fd -e py -e "see `x`"', 'fd -e py is not the py launcher'),
 ]
 
 
@@ -124,7 +133,19 @@ def main():
     else:
         print("  SCOPE ok   non-Bash payload ignored")
 
-    total = len(MUST_BLOCK) + len(MUST_PASS) + 1
+    # A crafted 48 KB run of flags must not make the opener regex backtrack badly.
+    import time
+    crafted = "python " + "-X py " * 8000 + 'x "`"'
+    t0 = time.time()
+    rc, _ = run(crafted)
+    dt = time.time() - t0
+    if dt >= 1.0:
+        fails.append(("timing", "48 KB crafted input took %.1fs" % dt, rc))
+        print("  TIME  FAIL %.1fs" % dt)
+    else:
+        print("  TIME  ok   48 KB crafted input in %.2fs" % dt)
+
+    total = len(MUST_BLOCK) + len(MUST_PASS) + 2
     print(f"\n{total - len(fails)}/{total} passed")
     for f in fails:
         print("  FAIL:", f)
