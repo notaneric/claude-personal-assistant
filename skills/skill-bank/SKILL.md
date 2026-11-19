@@ -163,7 +163,7 @@ conservatively, low use may mean the domain came up less, not that the skill is 
 Check: did the domain come up? If yes and the skill was bypassed, that's signal.
 
 Never hard-remove a skill with avg_reward > 0.6, even if unused. A skill that goes unused
-keeps its score (the exploration bonus shrinks only as uses grow), and nothing deletes it; route to it from the
+never sees its score fall (with its uses fixed, the exploration bonus grows with the session count up to the 0.25 cap), and nothing deletes it; route to it from the
 activation matrix when the domain recurs.
 
 ## Concurrency Note

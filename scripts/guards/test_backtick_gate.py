@@ -135,15 +135,24 @@ def main():
 
     # A crafted 48 KB run of flags must not make the opener regex backtrack badly.
     import time
-    crafted = "python " + "-X py " * 8000 + 'x "`"'
-    t0 = time.time()
-    rc, _ = run(crafted)
-    dt = time.time() - t0
-    if dt >= 1.0:
-        fails.append(("timing", "48 KB crafted input took %.1fs" % dt, rc))
-        print("  TIME  FAIL %.1fs" % dt)
-    else:
-        print("  TIME  ok   48 KB crafted input in %.2fs" % dt)
+    # The launcher's command-position prefix (sudo/time/exec/env assignments) is bounded too:
+    # unbounded, 48 KB of `A=1` lines took 22.7 s and bare newlines 245 s, past the hook
+    # timeout, so the gate failed open (third review).
+    crafted_inputs = {
+        "flag run": "python " + "-X py " * 8000 + 'x "`"',
+        "assignment lines": "A=1\n" * 12000 + 'py -c "`"',
+        "query string": "a=1&" * 12000 + 'py -c "`"',
+        "bare newlines": "\n" * 48000 + 'py -c "`"',
+    }
+    for label, crafted in crafted_inputs.items():
+        t0 = time.time()
+        rc, _ = run(crafted)
+        dt = time.time() - t0
+        if dt >= 1.0:
+            fails.append(("timing", "48 KB %s input took %.1fs" % (label, dt), rc))
+            print("  TIME  FAIL %s %.1fs" % (label, dt))
+        else:
+            print("  TIME  ok   48 KB %s input in %.2fs" % (label, dt))
 
     total = len(MUST_BLOCK) + len(MUST_PASS) + 2
     print(f"\n{total - len(fails)}/{total} passed")

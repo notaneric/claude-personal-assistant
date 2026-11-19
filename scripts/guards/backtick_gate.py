@@ -44,8 +44,10 @@ import sys
 # `--include=*.py -e`), nor `-t ` / `--type ` (`rg -t py -e "`). The bare launcher `py`/`pyw`
 # counts only in command position (start, after ; && || | ( $( newline, sudo/time/exec, or env
 # assignments), so `rg -T py -e "` and `fd -e py -e "` are not flagged.
-# Not covered: other flags that take a separate value (e.g. node --loader x), and a value that
-# itself starts with a dash.
+# Not covered: other flags that take a separate value (e.g. node --loader x), a value that
+# itself starts with a dash, an attached argument (python -c"..."), perl -E, node -p and
+# node --eval, and the py launcher after if, !, {, env or nohup. Known false positives:
+# rg -T perl -e "..." (also ruby or python) and docker run --name node -it -e "...".
 def _build_opener():
     guard = r"(?<![\w.=-])(?<!-t )(?<!--type )"
     exe = r"(?:\.[Ee][Xx][Ee])?[\x22\x27]?(?=\s)"
@@ -63,7 +65,7 @@ def _build_opener():
     node = guard + "node" + exe + flags("r", r"--(?:require|import|input-type)") + tail
     perl = guard + "perl" + exe + flags("IM") + tail
     ruby = guard + "ruby" + exe + flags("Ir") + tail
-    cmdpos = r"(?:^|[;&|(\n]|\$\()\s*(?:(?:sudo|time|exec|\w+=\S*)\s+)*"
+    cmdpos = r"(?:^|[;&|(\n]|\$\()[ \t]*(?:(?:sudo|time|exec|\w+=[^\s;&|()]*)[ \t]+){0,8}"
     launcher = (cmdpos + r"[\x22\x27]?(?:[\w:.\\/-]*[/\\])?(?<![\w.=-])pyw?"
                 + exe + flags("XW") + tail)
     return re.compile("|".join("(?:" + p + ")" for p in (py, node, perl, ruby, launcher)))
