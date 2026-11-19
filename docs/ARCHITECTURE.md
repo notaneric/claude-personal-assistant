@@ -35,9 +35,8 @@ SDAR stands for Self-Distilled Agentic RL. It is how Eric gets better over sessi
 
 ```mermaid
 flowchart TD
-    A["Task arrives"] --> B{"Skill bank lookup"}
-    B --> C["UCB retrieval<br/>select top-k skills for this domain"]
-    C --> D["Activate skills, apply to task"]
+    A["Task arrives"] --> B{"Skill Activation Matrix<br/>(CLAUDE.md routing)"}
+    B --> D["Apply the matched skills"]
     D --> E["Execute task"]
     E --> F{"Session ends"}
     F --> G["run /learn: collect feedback"]
@@ -67,7 +66,7 @@ Where:
   uses        = lifetime use count for this skill
 ```
 
-High `avg_reward` and low `uses` = high UCB = prioritized for retrieval. This means new skills get tried, and good skills stay active. Dead weight ends up with a low average and is retrieved less, but the loop never drops it. Even a low-signal skill gets explored once in a while. The bonus is capped at 0.25. Uncapped, it keeps growing with the session count: past about 55 sessions a never-used skill's bonus alone is larger than the whole 0-to-1 reward range, so untried skills outrank every skill with a real track record, and using a skill well makes it rank lower.
+High `avg_reward` and low `uses` = high UCB = a higher rank on the list the SessionStart banner prints (the global top 5). No code ranks skills by domain before a task: routing is the Skill Activation Matrix, and the score is credited after the fact by `/learn`. Dead weight ends up with a low average and ranks lower, but the loop never drops it. The bonus is capped at 0.25. Uncapped, it keeps growing with the session count: past about 55 sessions a never-used skill's bonus alone is larger than the whole 0-to-1 reward range, so untried skills outrank every skill with a real track record, and using a skill well makes it rank lower.
 
 ### Why there is no trust gate
 
@@ -156,7 +155,7 @@ skills/
   verification-before-done/SKILL.md  Runtime verification before declaring done
   prompt-quality-gate/SKILL.md    Catch bad prompts before execution
   generate-evaluate-repair/SKILL.md  3-step constrained generation loop
-  skill-bank/SKILL.md             UCB retrieval and SDAR update logic
+  skill-bank/SKILL.md             UCB scoring and SDAR update logic
   context-discipline/SKILL.md     Context window hygiene
 
   # External skills (not vendored):

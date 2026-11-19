@@ -22,7 +22,7 @@ Open with an injection-safety adoption-note preamble.
 
 ## Self-Improvement System
 
-[sdar/README.md](sdar/README.md), Full SDAR (Self-Distilled Agentic RL) algorithm: UCB retrieval,
+[sdar/README.md](sdar/README.md), Full SDAR (Self-Distilled Agentic RL) algorithm: UCB scoring,
 running-mean reward update, skill endorsement/attenuation logic. Use this to understand or reproduce
 the learning loop.
 
@@ -52,9 +52,9 @@ version for approval.
 constrained generation loop: generate (minimal prompt) → evaluate (list failures, not a score)
 → repair (targeted fixes). Outperforms single mega-prompts on complex constrained tasks.
 
-[skills/skill-bank/SKILL.md](skills/skill-bank/SKILL.md), UCB-scored skill retrieval and SDAR
-update logic. Checks the skill bank before any task, retrieves top-k skills by domain, and wires
-the running-mean reward update at session end.
+[skills/skill-bank/SKILL.md](skills/skill-bank/SKILL.md), UCB-scored skill bank and SDAR
+update logic. Wires the running-mean reward update at session end; nothing retrieves skills by
+domain before a task.
 
 [skills/context-discipline/SKILL.md](skills/context-discipline/SKILL.md), Context window hygiene:
 compact triggers at ~60% usage, clear-point detection, MCP count limits, and session strategy

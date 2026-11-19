@@ -1,13 +1,12 @@
 ---
 name: skill-bank
 description: |
-  The SDAR self-improvement framework. Maintains a UCB-scored skill bank, retrieves
-  the highest-scoring skills for each task domain, and updates scores after each
-  session based on the session's process rating.
+  The SDAR self-improvement framework. Maintains a UCB-scored skill bank and updates
+  scores after each session based on the session's process rating. Scores are credited
+  after the fact; nothing ranks skills by domain before a task.
 
-  USE-FOR: Session initialization (retrieve relevant skills), skill activation routing,
-  post-session score updates, periodic reflection on which skills are underperforming
-  or stale.
+  USE-FOR: Post-session score updates, reading the bank's rankings, periodic reflection
+  on which skills are underperforming or stale.
 
   DO-NOT-USE-FOR: One-off tasks with no session concept, or deployments where the
   skill bank file cannot persist between runs.
@@ -31,9 +30,10 @@ allowed-tools:
 
 SDAR (Self-Distilled Agentic RL) is a self-improvement loop for Claude Code agents.
 The agent maintains a JSON skill bank tracking how well each skill performed on past
-tasks. Before each session, it retrieves the highest-scoring skills for the current
-domain. After each session, it updates scores from the session's process rating. Over time,
-the agent gets measurably better at routing.
+tasks. After each session, `/learn` updates scores from the session's process rating. The
+SessionStart banner prints the global top 5 by score. No code retrieves skills by domain
+before a task: routing is the Skill Activation Matrix in CLAUDE.md, and the scores show which
+skills the sessions have credited.
 
 This skill does not filter low-quality advice. A bad rating just lowers a skill's running mean.
 
@@ -41,7 +41,7 @@ This skill does not filter low-quality advice. A bad rating just lowers a skill'
 
 ```
 RL backbone (task outcome)     → primary signal
-Skill bank (UCB retrieval)     → secondary guidance signal
+Skill bank (UCB scores)        → secondary guidance signal
 
 Endorsed skill:    reward = rating / 5
 Attenuated skill:  reward = (rating - 1) / 5
@@ -90,16 +90,15 @@ The template (`sdar/skill_bank.template.json`) ships with `uses: 0` and
 
 ## Session Protocol
 
-### Before each session (retrieve)
-1. Read `sdar/skill_bank.json`
-2. Classify the incoming task into a domain (planning, research, design, writing, code, etc.)
-3. Retrieve the top-k skills by UCB score for that domain (k=3 as a default)
-4. Activate those skills, load their SKILL.md files for guidance
+### Before each session
+There is no retrieval step. The SessionStart banner prints the global top 5 by UCB score, and
+skills are routed by the Skill Activation Matrix in CLAUDE.md. A team that wants per-domain
+retrieval would have to build it: read the bank, classify the task, rank that domain's skills.
 
 ### During the session (apply)
-Apply the retrieved skills as guidance, not as rigid rules. Nothing forces a skill's
-advice on the session: if a retrieved skill's recommendation doesn't fit the current
-situation, note the mismatch, it's data for the post-session update.
+Apply the skills the matrix routes to as guidance, not as rigid rules. Nothing forces a skill's
+advice on the session: if a skill's recommendation doesn't fit the current situation, note the
+mismatch, it's data for the post-session update.
 
 ### After each session (update)
 1. Set the reward for each skill that got feedback, using the session rating (out of 5):
@@ -124,7 +123,7 @@ because it requires reading all session logs, which is expensive context-wise.
 
 ## Domain Taxonomy
 
-Classify tasks into these domains for retrieval:
+Domains used to label skills in the bank:
 
 | Domain | Example tasks |
 |---|---|
@@ -175,10 +174,9 @@ agents corrupt the running averages.
 ## Adoption Guidance
 
 1. Start from `sdar/skill_bank.template.json`, neutral priors, no real scores.
-2. The UCB formula is the retrieval mechanism; don't skip it in favor of just reading
-   skill descriptions and guessing which applies. The score captures history you don't
-   have in context.
-3. The post-session update is the highest-leverage step. An agent that retrieves
-   skills but never updates scores doesn't improve, it just has an expensive lookup.
+2. The UCB formula ranks skills by past reward plus a capped exploration bonus. The score
+   captures history you don't have in context; read it before deciding a skill is dead weight.
+3. The post-session update is the highest-leverage step. Without it the scores never move
+   and the bank is a static list.
 4. Build the reflection pass as a scheduled job (or a `/reflect` command), not an
    in-session step. It requires context that's cheaper to load fresh than to carry.

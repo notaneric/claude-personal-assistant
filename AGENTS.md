@@ -13,7 +13,7 @@
 Code-based personal AI agent named **Eric**. It packages:
 
 - A structured CLAUDE.md operating manual with a skill activation matrix
-- A self-improvement framework (SDAR) that gets better every session via UCB retrieval
+- A self-improvement framework (SDAR) that gets better every session via UCB scoring
   and a running-mean reward update
 - Modular skill files you can drop into any Claude Code project
 - Agent orchestration patterns and a hooks system
@@ -80,7 +80,7 @@ skills/
   verification-before-done/SKILL.md  Enforce visual/runtime verification before declaring done
   prompt-quality-gate/SKILL.md   Catch vague, conflicting, or low-density prompts before execution
   generate-evaluate-repair/SKILL.md  3-step constrained generation loop (generate → eval → fix)
-  skill-bank/SKILL.md            UCB-scored skill retrieval and SDAR update logic
+  skill-bank/SKILL.md            UCB-scored skill bank and SDAR update logic
   context-discipline/SKILL.md    Context window hygiene, compact triggers, clear-points, MCP limits
 
   # External skills (not vendored, reference by link):

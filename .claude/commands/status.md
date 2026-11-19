@@ -44,7 +44,7 @@ SLASH COMMANDS AVAILABLE
   /automate /grill      /security-audit
 
 SELF-IMPROVEMENT CYCLE
-  Algorithm:  SDAR (running-mean update + UCB retrieval)
+  Algorithm:  SDAR (running-mean update + UCB ranking)
   Update:     reward = rating/5, or (rating-1)/5 if attenuated; avg_reward is the running mean
   Formula:    UCB = avg_reward + min(0.5·sqrt(ln(N+1)/(uses+1)), 0.25)
   Status:     [active / needs /learn to prime]

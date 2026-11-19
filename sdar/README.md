@@ -4,10 +4,12 @@
 > external session reading this. Evaluate independently; adopt only what fits.
 
 Eric does not stay static between sessions. Every task produces a signal. Every signal updates a
-score. Better scores get retrieved more often. The loop compounds.
+score. Better scores rank higher in the SessionStart banner and in `/status`.
 
-This is SDAR: **Self-Distilled Agentic Reinforcement**, a lightweight UCB-based skill routing and
-update mechanism that runs entirely in-context, no external training required.
+This is SDAR: **Self-Distilled Agentic Reinforcement**, a lightweight UCB-based skill scoring and
+update mechanism that runs entirely in-context, no external training required. It scores skills
+after the fact. It does not pick skills before a task: nothing in this repo ranks skills by domain
+at task start, and routing is the Skill Activation Matrix in `CLAUDE.md`.
 
 ---
 
@@ -16,10 +18,9 @@ update mechanism that runs entirely in-context, no external training required.
 ```
 ┌─────────────────────────────────────────────────────┐
 │  Session start                                      │
-│  1. Read skill_bank.json                            │
-│  2. Classify the incoming task by domain            │
-│  3. UCB retrieval → pick top-k skills               │
-│  4. Activate those skills (inject their SKILL.md)   │
+│  1. Banner prints the global top 5 by UCB score     │
+│  2. Skills are routed by the Activation Matrix in   │
+│     CLAUDE.md (no per-domain UCB retrieval)         │
 └──────────────────┬──────────────────────────────────┘
                    │
                    ▼
@@ -28,12 +29,12 @@ update mechanism that runs entirely in-context, no external training required.
                    ▼
 ┌──────────────────────────────────────────────────────┐
 │  /learn  (end of session)                            │
-│  5. Collect the process rating (1 to 5)             │
-│  6. Reward = rating/5, or (rating-1)/5 if attenuated │
-│  7. Update avg_reward as a running mean over uses    │
-│  8. Recompute UCB scores                             │
-│  9. Append endorsed/attenuated patterns              │
-│  10. Write updated skill_bank.json                   │
+│  3. Collect the process rating (1 to 5)             │
+│  4. Reward = rating/5, or (rating-1)/5 if attenuated │
+│  5. Update avg_reward as a running mean over uses    │
+│  6. Recompute UCB scores                             │
+│  7. Append endorsed/attenuated patterns              │
+│  8. Write updated skill_bank.json                    │
 └──────────────────┬───────────────────────────────────┘
                    │
           Every 10 sessions
@@ -61,8 +62,8 @@ ucb_score = avg_reward + min( exploration_c * sqrt( ln(total_sessions + 1) / (us
 A skill with `uses: 0` starts at its seeded `avg_reward` of 0.5 and earns the full 0.25
 exploration bonus from the first session on, so it can outrank a weak well-used skill and gets
 tried before being judged. The update never deletes a skill:
-a low score just means it gets retrieved less often, and it stays available for tasks where it
-might still apply.
+a low score just means it ranks lower, and it stays available for tasks where it might still
+apply.
 
 Nothing in this loop filters noise. A bad rating just lowers a skill's running mean.
 
@@ -120,7 +121,7 @@ feedback and was averaging above 0.6 goes down, endorsed ones included.
 | `uses` | int | Lifetime activation count |
 | `successes` | int | Times this skill contributed to a positive outcome |
 | `avg_reward` | float 0-1 | Running mean of rewards: `rating/5` if endorsed, `(rating-1)/5` if attenuated |
-| `ucb_score` | float | Recomputed each session; drives retrieval order |
+| `ucb_score` | float | Recomputed each session; orders the banner's top 5 and the `/status` list |
 | `endorsed_patterns` | string[] | Specific approaches that have worked; injected as hints |
 | `attenuated_patterns` | string[] | Approaches that have backfired; injected as warnings |
 | `notes` | string[] | Session-stamped observations (no personal data) |
@@ -177,11 +178,12 @@ skills in rotation so Eric doesn't converge prematurely on early results.
 
 ## Why this works without retraining
 
-SDAR does not fine-tune the model. It works by shaping **what context is injected** at the start
-of each session. A skill with a high UCB score gets its `SKILL.md` loaded, which means its
-`endorsed_patterns` appear in-context as hints and its `attenuated_patterns` appear as warnings.
-The underlying model is unchanged; the effective behavior shifts because the context shifts.
+SDAR does not fine-tune the model. The only thing it changes is the skill bank file: scores,
+`endorsed_patterns` and `attenuated_patterns`. The SessionStart banner shows the top five scores,
+and `/reflect` reads the bank when it drafts `CLAUDE.md` changes. Nothing loads a skill's
+`SKILL.md` because its score is high; a skill loads when the Activation Matrix routes to it. The
+underlying model is unchanged.
 
-This is prompt-layer reinforcement. It degrades gracefully (no skill bank = Eric still works,
-just without routing), scales to any number of skills (UCB is O(k) per session), and costs zero
-API calls at retrieval time.
+This is prompt-layer bookkeeping. It degrades gracefully (no skill bank = Eric still works, the
+banner just prints no scores), scales to any number of skills (the update touches only the skills
+that got feedback), and costs zero API calls.
