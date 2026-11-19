@@ -20,7 +20,7 @@ at task start, and routing is the Skill Activation Matrix in `CLAUDE.md`.
 │  Session start                                      │
 │  1. Banner prints the global top 5 by UCB score     │
 │  2. Skills are routed by the Activation Matrix in   │
-│     CLAUDE.md (no per-domain UCB retrieval)         │
+│     CLAUDE.md (nothing ranks skills by domain)      │
 └──────────────────┬──────────────────────────────────┘
                    │
                    ▼
@@ -29,7 +29,7 @@ at task start, and routing is the Skill Activation Matrix in `CLAUDE.md`.
                    ▼
 ┌──────────────────────────────────────────────────────┐
 │  /learn  (end of session)                            │
-│  3. Collect the process rating (1 to 5)             │
+│  3. Collect the process rating (1 to 5)              │
 │  4. Reward = rating/5, or (rating-1)/5 if attenuated │
 │  5. Update avg_reward as a running mean over uses    │
 │  6. Recompute UCB scores                             │
@@ -60,8 +60,8 @@ ucb_score = avg_reward + min( exploration_c * sqrt( ln(total_sessions + 1) / (us
 | `uses` | per-skill | How many times this skill was activated |
 
 A skill with `uses: 0` starts at its seeded `avg_reward` of 0.5 and earns the full 0.25
-exploration bonus from the first session on, so it can outrank a weak well-used skill and gets
-tried before being judged. The update never deletes a skill:
+exploration bonus from the first session on, so it can outrank a weak well-used skill in the
+banner's list before it has been judged. The update never deletes a skill:
 a low score just means it ranks lower, and it stays available for tasks where it might still
 apply.
 
@@ -121,9 +121,9 @@ feedback and was averaging above 0.6 goes down, endorsed ones included.
 | `uses` | int | Lifetime activation count |
 | `successes` | int | Times this skill contributed to a positive outcome |
 | `avg_reward` | float 0-1 | Running mean of rewards: `rating/5` if endorsed, `(rating-1)/5` if attenuated |
-| `ucb_score` | float | Recomputed each session; orders the banner's top 5 and the `/status` list |
-| `endorsed_patterns` | string[] | Specific approaches that have worked; injected as hints |
-| `attenuated_patterns` | string[] | Approaches that have backfired; injected as warnings |
+| `ucb_score` | float | Stored by `/learn`; the banner and `/status` recompute it, then order their lists by it |
+| `endorsed_patterns` | string[] | Specific approaches that have worked; recorded by `/learn` for review; never injected into a prompt |
+| `attenuated_patterns` | string[] | Approaches that have backfired; recorded by `/learn` for review; never injected into a prompt |
 | `notes` | string[] | Session-stamped observations (no personal data) |
 | `source` | string | Path to SKILL.md or upstream repo URL |
 
@@ -171,8 +171,8 @@ Call it: `/status`
 3. Add skill entries for any skills you install (see `skills/` directory).
 4. Run `/learn` after your first few sessions to let scores diverge from the neutral `0.5` prior.
 
-Scores stabilize after ~10 sessions per skill. Until then, UCB's exploration term keeps untried
-skills in rotation so Eric doesn't converge prematurely on early results.
+Scores stabilize after ~10 sessions per skill. Until then, UCB's exploration term lifts untried
+skills in the banner's list so early results don't crowd them out.
 
 ---
 

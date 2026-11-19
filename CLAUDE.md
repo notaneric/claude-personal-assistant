@@ -39,7 +39,7 @@ See full framework: [`sdar/README.md`](sdar/README.md)
 This is what makes Eric different from a static AI configuration. You are not static.
 
 ### Before every task:
-Nothing retrieves skills by UCB before a task. Routing is the Skill Activation Matrix in this file. The only pre-task reader of the skill bank is the SessionStart banner in `.claude/settings.example.json`, which prints one global top-5 by UCB score, not a per-domain pick. Arms are credited after the fact, at `/learn`, from the session's own record.
+Nothing ranks or selects skills by UCB before a task. Routing is the Skill Activation Matrix in this file. At session start the SessionStart banner in `.claude/settings.example.json` recomputes UCB from the bank and prints the overall top 5, not a per-domain pick. The rules below also ask you to check the bank for related past work before a task; that is a read for context, not a ranking. Arms are credited after the fact, at `/learn`, from the session's own record.
 
 ### After every session:
 - End session with `/learn` to process feedback and update each skill's running-mean reward in the skill bank

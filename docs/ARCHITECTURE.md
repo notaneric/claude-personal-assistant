@@ -55,7 +55,7 @@ flowchart TD
 
 ### UCB score formula
 
-Each skill carries a score that balances exploitation (use what works) against exploration (try what hasn't been tested enough):
+Each skill carries a score that balances exploitation (a high running mean) against exploration (a bonus for skills with few uses). It orders the banner's list; it does not choose skills:
 
 ```
 UCB score = avg_reward + min(0.5 * sqrt(ln(N + 1) / (uses + 1)), 0.25)

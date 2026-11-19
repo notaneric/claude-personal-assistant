@@ -50,9 +50,10 @@ Update:            avg_reward = (avg_reward * (uses - 1) + reward) / uses   (use
 UCB score: avg_reward + min(0.5 · √(ln(N + 1) / (uses + 1)), 0.25)
 ```
 
-The UCB formula balances exploitation (use high-scoring skills) with exploration
-(try underused skills that might be good). Skills with 0 uses get a bonus, capped at 0.25,
-so an untried skill competes with proven ones without automatically outranking them.
+The UCB formula balances exploitation (a high running mean) with exploration (a bonus for
+skills with few uses). Skills with 0 uses get a bonus, capped at 0.25, so an untried skill
+scores close to proven ones without automatically outranking them. The score only orders the
+banner's top 5 and the `/status` list; it does not choose which skill runs.
 
 ### Why there is no trust gate
 
@@ -79,9 +80,9 @@ The skill bank lives at `sdar/skill_bank.json`. Each entry:
 ```
 
 Fields:
-- `uses`, total times this skill was retrieved and applied
+- `uses`, total sessions that credited this skill with a rating
 - `avg_reward`, running mean of rewards (0-1) from the sessions where this skill got feedback
-- `ucb_score`, computed score used for retrieval ranking (recomputed after each update)
+- `ucb_score`, computed score (recomputed after each update, and again by the banner and `/status`, which use it to order their lists)
 - `last_used`, ISO timestamp of last activation (used for staleness flagging)
 - `session_history`, last N outcomes for trend analysis (keep ≤10 entries)
 
@@ -141,7 +142,7 @@ naturally cluster differently for your agent, update the list.
 
 ## Activation Matrix
 
-Beyond session-level retrieval, maintain an activation matrix in CLAUDE.md that maps
+Beyond the banner's global top 5, maintain an activation matrix in CLAUDE.md that maps
 task signals to skill names. This enables proactive activation (skill fires when the
 context is relevant, without waiting for a `/slash command`):
 
@@ -161,8 +162,8 @@ conservatively, low use may mean the domain came up less, not that the skill is 
 Check: did the domain come up? If yes and the skill was bypassed, that's signal.
 
 Never hard-remove a skill with avg_reward > 0.6, even if unused. The UCB formula
-will naturally de-prioritize it; let the exploration bonus bring it back if the domain
-recurs.
+will rank it lower in the banner's list, but nothing deletes it; route to it from the
+activation matrix when the domain recurs.
 
 ## Concurrency Note
 

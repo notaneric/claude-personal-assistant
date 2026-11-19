@@ -69,7 +69,7 @@
     },
     "skill-bank": {
       "domain": "meta",
-      "task_types": ["ucb-retrieval", "skill-selection", "self-improvement", "reward-update"],
+      "task_types": ["skill-scoring", "skill-selection", "self-improvement", "reward-update"],
       "uses": 0,
       "successes": 0,
       "avg_reward": 0.5,

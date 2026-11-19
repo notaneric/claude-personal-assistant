@@ -31,13 +31,20 @@ import json
 import re
 import sys
 
-# python -c " / python3 -c " / node -e " / perl -e " / ruby -e ", with any interpreter flags
-# between the name and -c/-e (python -I -c ", python3 -X utf8 -c ", python.exe -E -c ",
-# node --input-type=module -e "). Without the flag group, `python -I -c "` slipped past the gate.
+# python -c " / python3 -c " / pythonw -c " / py -3 -c " / node -e " / perl -e " / ruby -e ",
+# with interpreter flags between the name and -c/-e: python -I -c ", python3 -X utf8 -c ",
+# python.exe -E -c ", py -3.12 -c ", perl -0777 -e ", node --input-type=module -e ". A flag is a
+# dash token; a separate value is accepted only after the flags that take one (-X, -W, -r,
+# --require), so `python -m pytest -c "` and `python -u deploy.py -e "` are not interpreter
+# one-liners. A bundled final flag ending in c/e (python -Ic ", perl -ne ", node -pe ") counts too.
+# The name must not follow a word char, dot, dash or `=` (that is `tool.py -c`, `./build.py -e`,
+# `--include=*.py -e`), nor `-t ` / `--type ` (`rg -t py -e "`).
+# Not covered: a bundled flag in the MIDDLE that takes a value, e.g. `python -XIc`.
 OPENER = re.compile(
-    r"\b(?:python[0-9.]*(?:\.exe)?|py|node|perl|ruby)"
-    r"(?:\s+--?[A-Za-z][\w-]*(?:=\S+)?(?:\s+(?!-)[\w.:=/-]+)??)*?"
-    r"\s+-(?:c|e)\s+\"")
+    r"(?<![\w.=-])(?<!-t )(?<!--type )"
+    r"(?:pythonw?[0-9.]*(?:\.exe)?|py|node|perl|ruby)(?=\s)"
+    r"(?:\s+(?:-[XW]|-r|--require)\s+[^\s-]\S*|\s+--?[A-Za-z0-9][\w.:-]*(?:=\S+)?)*?"
+    r"\s+-(?:c|e|[A-Za-z]*[ce])\s+\"")
 
 
 def _double_quoted_span(cmd, start):
