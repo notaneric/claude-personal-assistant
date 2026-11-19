@@ -31,6 +31,13 @@ MUST_BLOCK = [
      "node -e, same transport"),
     ('python3 -c "x = \\"a\\" ; print(\'`ls`\')"',
      "python3 with escaped inner double quotes, live backtick"),
+    # An interpreter flag before -c must not hide the opener from the gate. Bash runs a
+    # backticked `git push` out of a note being appended to a file.
+    ('python -I -c "\np=\'x.md\'\ns+=\'\'\'\n- NEXT: then `git push origin main` later\n\'\'\'\n"',
+     "python -I -c, backticked git push"),
+    ('python3 -X utf8 -c "print(\'`ls`\')"', "flag with a value before -c"),
+    ('C:/Python314/python.exe -E -c "print(\'`ls`\')"', "python.exe path with a flag"),
+    ("node --input-type=module -e \"console.log('`x`')\"", "node long flag before -e"),
 ]
 
 MUST_PASS = [
@@ -46,6 +53,8 @@ MUST_PASS = [
     # Heredoc with backticks - a different transport, not this gate's job.
     ("python <<'EOF'\nprint('`x`')\nEOF", "quoted heredoc, not this gate"),
     ("echo hello", "trivial"),
+    ("python -I -c 'print(\"see `notes.md`\")'", "single-quoted -c with a flag is inert"),
+    ('python -I tool.py "$(cat x)" && echo `date +%F`', "flags but no -c; substitution outside -c"),
 ]
 
 

@@ -31,9 +31,13 @@ import json
 import re
 import sys
 
-# python -c " / python3 -c " / node -e " / perl -e " / ruby -e "
+# python -c " / python3 -c " / node -e " / perl -e " / ruby -e ", with any interpreter flags
+# between the name and -c/-e (python -I -c ", python3 -X utf8 -c ", python.exe -E -c ",
+# node --input-type=module -e "). Without the flag group, `python -I -c "` slipped past the gate.
 OPENER = re.compile(
-    r"\b(?:python[0-9.]*|node|perl|ruby)\s+-(?:c|e)\s+\"")
+    r"\b(?:python[0-9.]*(?:\.exe)?|py|node|perl|ruby)"
+    r"(?:\s+--?[A-Za-z][\w-]*(?:=\S+)?(?:\s+(?!-)[\w.:=/-]+)??)*?"
+    r"\s+-(?:c|e)\s+\"")
 
 
 def _double_quoted_span(cmd, start):
